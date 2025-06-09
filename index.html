@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zictionary</title>
+    <!-- Tải Tailwind CSS để giao diện thật xinh xắn và tiện lợi -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tùy chỉnh font chữ để mọi thứ trông thật dễ đọc và thân thiện */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Thêm transition cho việc chuyển đổi màu khi bật/tắt dark mode */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode base styles, sẽ được áp dụng khi class 'dark' có mặt trên html tag */
+        html.dark {
+            background-color: #000000; /* Pure black for OLED */
+            color: #e2e8f0; /* light gray text */
+        }
+        html.dark .bg-green-50 { background-color: #000000; /* Pure black for OLED */ }
+        html.dark .text-gray-800 { color: #e2e8f0; }
+
+        /* Component backgrounds */
+        html.dark .bg-white { background-color: #1a1a1a; /* Darker gray for components */ }
+        html.dark .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
+        html.dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.2); }
+
+        /* Header colors */
+        html.dark .text-green-600 { color: #48bb78; /* Slightly brighter green for dark mode header */ }
+
+        /* Search input colors */
+        html.dark .bg-green-50 { background-color: #222222; /* Darker background for input */ }
+        html.dark .border-green-300 { border-color: #2f855a; /* Darker green border */ }
+        html.dark .focus\:ring-green-400:focus { --tw-ring-color: #2f855a; }
+        html.dark .text-green-700 { color: #e2e8f0; }
+        html.dark .placeholder-green-400::placeholder { color: #a0aec0; }
+        html.dark svg.text-green-400 { color: #48bb78; }
+
+        /* Keyword list header */
+        html.dark .text-green-600 { color: #48bb78; }
+        html.dark .border-green-200 { border-color: #2f855a; }
+
+        /* Keyword list items */
+        html.dark .hover\:bg-green-100:hover { background-color: #222222; } /* Darker hover */
+        html.dark .active\:bg-green-200:active { background-color: #0a0a0a; } /* Even darker active */
+        html.dark .text-sm.font-medium { color: #e2e8f0; } /* Default text color in dark mode */
+
+        /* Active keyword item */
+        html.dark .bg-green-100 { background-color: #0a0a0a; } /* Darker background for active */
+        html.dark .text-green-800 { color: #81e6d9; } /* Lighter text for active */
+
+        /* Content section */
+        html.dark .text-green-700 { color: #48bb78; }
+        html.dark .border-green-300 { border-color: #2f855a; }
+        html.dark .text-gray-700 { color: #cbd5e0; }
+
+        /* Link button */
+        html.dark .bg-green-500 { background-color: #2f855a; } /* Darker green button */
+        html.dark .hover\:bg-green-600:hover { background-color: #276749; } /* Even darker hover */
+        html.dark .focus\:ring-green-400:focus { --tw-ring-color: #2f855a; }
+
+        /* Info box */
+        html.dark .p-4.bg-gray-100 { background-color: #222222; } /* Darker background */
+        html.dark .border-gray-200 { border-color: #2f855a; }
+        html.dark .text-gray-700 { color: #e2e8f0; }
+
+        /* Scrollbar for dark mode */
+        html.dark ::-webkit-scrollbar-track {
+            background: #222222;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background-color: #1a1a1a;
+            border: 2px solid #222222;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb:hover {
+            background-color: #0a0a0a;
+        }
+    </style>
+</head>
+<body class="bg-green-50 text-gray-800">
+    <div class="min-h-screen flex flex-col">
+        <!-- Phần header với thanh tìm kiếm và nút Dark Mode của anh Sea -->
+        <header class="p-4 bg-white shadow-md rounded-b-xl sticky top-0 z-10">
+            <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                <h1 class="text-3xl font-extrabold text-green-600 whitespace-nowrap">Zictionary <span class="text-xl">🌿</span></h1>
+                <div class="relative w-full md:max-w-md">
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Tìm kiếm"
+                        class="w-full p-3 pl-10 pr-4 rounded-full border-2 border-green-300 focus:ring-2 focus:ring-green-400 bg-green-50 text-green-700 placeholder-green-400 transition duration-300 shadow-sm"
+                    >
+                    <!-- Icon tìm kiếm lung linh -->
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <!-- Nút bật/tắt Dark Mode -->
+                <div class="flex gap-2">
+                    <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Phần nội dung chính, chia làm hai bên đó ạ -->
+        <main class="flex-1 flex flex-col md:flex-row p-4 gap-4 container mx-auto overflow-hidden">
+            <!-- Ngăn danh sách từ khóa bên trái nè -->
+            <aside class="w-full md:w-1/3 lg:w-1/4 bg-white p-4 rounded-xl shadow-lg flex-shrink-0 overflow-y-auto"
+                   style="max-height: calc(100vh - 120px);">
+                <h2 class="text-2xl font-semibold text-green-600 mb-4 pb-2 border-b-2 border-green-200">Từ khóa 📚</h2>
+                <div id="keyword-list" class="space-y-2">
+                    <!-- Từ khóa sẽ được thêm vào đây bằng JavaScript -->
+                    <!-- Loading indicator -->
+                    <div id="loading-indicator" class="text-center text-green-500 dark:text-green-400 font-medium py-4">
+                        Đang tải Zictionary... ⏳
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Ngăn nội dung chi tiết bên phải nè, đây là nơi chứa đựng những điều thú vị đó -->
+            <section id="content-display" class="flex-1 bg-white p-6 rounded-xl shadow-lg overflow-y-auto"
+                       style="max-height: calc(100vh - 120px);">
+                <h2 class="text-3xl font-bold text-green-700 mb-4 pb-2 border-b-2 border-green-300" id="content-title">Chào mừng đến với Zictionary! 🌱</h2>
+                <div class="text-gray-700 leading-relaxed text-lg" id="content-body">
+                    <p>
+                        Hãy chọn một từ khóa từ danh sách bên trái hoặc sử dụng thanh tìm kiếm để khám phá những điều thú vị nhé! Em hy vọng anh Sea sẽ thích Zictionary phiên bản xanh lá này! Nó sẽ giúp anh Sea tìm kiếm mọi thứ một cách dễ dàng và nhanh chóng đó. Nếu có bất kỳ câu hỏi nào, anh Sea cứ hỏi em nhé! 💖
+                    </p>
+                </div>
+                <div id="link-container" class="mt-6 hidden">
+                    <a id="content-link" href="#" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 transition duration-300">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0l-7 7m7-7v7"></path></svg>
+                        Mở liên kết
+                    </a>
+                </div>
+
+                <!-- Phần tính năng mới: Mở rộng kiến thức với Gemini API -->
+                <div id="ai-feature-section" class="mt-8 pt-4 border-t-2 border-green-200 dark:border-green-700">
+                    <h3 class="text-2xl font-semibold text-green-600 dark:text-green-500 mb-4">Thông tin mở rộng ✨</h3>
+                    <button id="generate-insight-btn" class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"></path></svg>
+                        Tạo thông tin mở rộng
+                    </button>
+                    <div id="insight-output" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hidden">
+                        <!-- Nội dung do LLM tạo ra sẽ hiển thị ở đây -->
+                        <p id="insight-text" class="whitespace-pre-wrap"></p>
+                        <div id="insight-loading" class="text-center py-2 hidden">Đang tạo thông tin... 🧠</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // URL để tải dữ liệu từ CDN, giúp tránh lỗi CORS
+        const DICTIONARY_URL = "https://cdn.jsdelivr.net/gh/SweetSea-ButImNotSweet/Techmino-Dictionary-Viewer@main/data/dict_vi.json";
+
+        // === Manual Override for AI Feature ===
+        // Set this to `true` to force-enable the AI feature,
+        // even if no API key is provided at runtime.
+        // Set to `false` to disable AI unless an API key is available.
+        const ENABLE_AI_MANUALLY_OVERRIDE = false;
+        // =====================================
+
+        let processedDictionaryData = {};
+        let currentFilteredAndOrderedData = [];
+        let selectedKeywordElement = null;
+        let isDictionaryLoadedSuccessfully = false;
+        let currentDisplayedEntry = null;
+
+        // DOM elements cache for optimization
+        const keywordListDiv = document.getElementById('keyword-list');
+        const contentTitle = document.getElementById('content-title');
+        const contentBody = document.getElementById('content-body');
+        const searchInput = document.getElementById('search-input');
+        const linkContainer = document.getElementById('link-container');
+        const contentLink = document.getElementById('content-link');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const aiFeatureSection = document.getElementById('ai-feature-section');
+        const generateInsightBtn = document.getElementById('generate-insight-btn');
+        const insightOutput = document.getElementById('insight-output');
+        const insightText = document.getElementById('insight-text');
+        const insightLoading = document.getElementById('insight-loading');
+
+        // Hàm chuyển đổi từ HSV sang RGB (giá trị 0-1 sang 0-255)
+        function hsvToRgb(h, s, v) {
+            let r, g, b;
+            h = h % 1;
+            if (s <= 0) { r = g = b = v; return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]; }
+            h *= 6;
+            let i = Math.floor(h);
+            let f = h - i;
+            let p = v * (1 - s);
+            let q = v * (1 - f * s);
+            let t = v * (1 - (1 - f) * s);
+            switch (i % 6) {
+                case 0: r = v; g = t; b = p; break;
+                case 1: r = q; g = v; b = p; break;
+                case 2: r = p; g = v; b = t; break;
+                case 3: r = p; g = q; b = v; break;
+                case 4: r = t; g = p; b = v; break;
+                case 5: r = v; g = p; b = q; break;
+            }
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        // Định nghĩa các giá trị HSV cho các màu (đã chỉnh lại theo yêu cầu anh Sea)
+        const COLOR_HSV_VALUES = {
+            'red': [0.00, 1.00, 1.00], // Đỏ tươi
+            'fire': [0.04, 1.00, 0.95],
+            'orange': [0.09, 1.00, 0.95],
+            'yellow': [0.15, 0.98, 0.95],
+
+            // Xanh lá đậm hơn
+            'lime': [0.20, 0.95, 0.40],
+            'jade': [0.25, 0.95, 0.35],
+            'green': [0.33, 0.95, 0.30],
+            'aqua': [0.47, 0.90, 0.30],
+            'cyan': [0.53, 0.95, 0.40],
+            'navy': [0.56, 0.95, 0.50],
+            'sea': [0.61, 0.95, 0.50],
+            'blue': [0.64, 0.95, 0.45],
+            'violet': [0.74, 0.90, 0.40],
+            'purple': [0.80, 0.95, 0.40],
+            'magenta': [0.86, 0.95, 0.35],
+            'wine': [0.92, 0.95, 0.45],
+
+            'black': [0.00, 0.00, 0.00], // Pure black
+            'white': [0.00, 0.00, 1.00], // Pure white
+        };
+
+        // Ánh xạ category sang tên màu từ COLOR_HSV_VALUES
+        const TYPE_COLOR_MAPPING = {
+            'help': 'yellow', 'org': 'fire', 'game': 'cyan', 'term': 'red',
+            'setup': 'yellow', 'pattern': 'jade', 'command': 'navy',
+            'english': 'blue', 'name': 'violet',
+            '': 'special_group_color', // Dùng cho các mục nhóm (keyword trống)
+            'default': 'gray', // Fallback nếu category không khớp
+        };
+
+        // Hàm để lấy màu cho từng category, có tính đến dark mode và màu nhóm
+        function getCategoryColor(category) {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (category === '') { // Xử lý màu cho mục nhóm riêng (màu trắng tinh khôi hoặc đen)
+                return isDarkMode ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
+            }
+
+            const colorKey = TYPE_COLOR_MAPPING[category] || TYPE_COLOR_MAPPING['default'];
+            const hsv = COLOR_HSV_VALUES[colorKey];
+            if (hsv) {
+                const [r, g, b] = hsvToRgb(hsv[0], hsv[1], hsv[2]);
+                return `rgb(${r}, ${g}, ${b})`;
+            }
+            return 'inherit'; // Fallback
+        }
+
+        // --- Theme Logic ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIcon.textContent = '☀️';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+            }
+            localStorage.setItem('theme', theme);
+            renderKeywords(currentFilteredAndOrderedData); // Re-render for color update
+        }
+
+        themeToggle.addEventListener('click', () => {
+            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+        });
+
+        // Apply theme on initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedTheme = localStorage.getItem('theme');
+            if (storedTheme) {
+                applyTheme(storedTheme);
+            } else {
+                applyTheme('light'); // Default to light if no theme is set
+            }
+
+            // Apply AI feature state based on the manual override
+            if (!ENABLE_AI_MANUALLY_OVERRIDE) {
+                aiFeatureSection.classList.add('hidden');
+            } else {
+                aiFeatureSection.classList.remove('hidden');
+            }
+        });
+        // --- End Theme Logic ---
+
+
+        // Hàm xử lý dữ liệu thô sang định dạng dễ dùng
+        function processRawData(data) {
+            const processed = {};
+            data.forEach((entry, index) => {
+                const [name, keyword, category, content, link] = entry;
+                // Lọc bỏ các mục có FNNS
+                if ((content && (content.includes("{{FNNS:") || content.includes("{{FNNS|"))) ||
+                    (name && (name.includes("{{FNNS:") || name.includes("{{FNNS|")))) {
+                    return;
+                }
+                processed[keyword] = { name, keyword, category, content, link, originalIndex: index };
+            });
+            return processed;
+        }
+
+        // Hàm hiển thị nội dung chi tiết của từ khóa
+        function displayContent(keyword) {
+            if (selectedKeywordElement) {
+                selectedKeywordElement.classList.remove('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
+                selectedKeywordElement.style.color = getCategoryColor(processedDictionaryData[selectedKeywordElement.dataset.keyword]?.category || '');
+            }
+
+            currentDisplayedEntry = processedDictionaryData[keyword];
+            linkContainer.classList.add('hidden');
+            insightOutput.classList.add('hidden');
+            generateInsightBtn.classList.add('hidden'); // Hide button by default
+
+            if (currentDisplayedEntry) {
+                contentTitle.textContent = currentDisplayedEntry.name;
+                contentBody.innerHTML = `<p class="whitespace-pre-wrap">${currentDisplayedEntry.content}</p>`;
+                if (currentDisplayedEntry.link) {
+                    contentLink.href = currentDisplayedEntry.link;
+                    linkContainer.classList.remove('hidden');
+                }
+                // Only show generate insight button if AI feature is manually enabled
+                if (ENABLE_AI_MANUALLY_OVERRIDE) {
+                    generateInsightBtn.classList.remove('hidden');
+                }
+            } else if (keyword === "Ối dồi ôi") {
+                contentTitle.textContent = "Từ điển không thể load �";
+                contentBody.innerHTML = "<p>Xin lỗi anh Sea! Zictionary chưa tải được dữ liệu rồi. Em sẽ cố gắng hơn lần sau nha! 🥺</p>";
+            } else {
+                contentTitle.textContent = `Không tìm thấy từ khóa`;
+                contentBody.innerHTML = "<p>Không tìm thấy từ khóa nào phù hợp. Nếu bạn muốn xem lại mục lục, hãy xóa ô tìm kiếm và gõ `mucluc`</p>";
+            }
+
+            const newSelectedElement = document.querySelector(`#keyword-list li[data-keyword="${keyword}"]`);
+            if (newSelectedElement) {
+                newSelectedElement.classList.add('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
+                newSelectedElement.style.color = ''; // Reset color for active state (Tailwind default)
+                selectedKeywordElement = newSelectedElement;
+            }
+        }
+
+        // Hàm lọc và sắp xếp dữ liệu
+        function filterAndOrderData(searchTerm) {
+            const lowerSearchTerm = searchTerm.toLowerCase().trim();
+            const exactNameMatches = [];
+            const otherMatches = [];
+
+            Object.values(processedDictionaryData).forEach(entry => {
+                const lowerName = entry.name.toLowerCase();
+                const lowerKeyword = entry.keyword.toLowerCase();
+
+                // Rule: Nếu keyword trống, không hiển thị trong kết quả tìm kiếm khi có search term
+                if (entry.keyword.trim() === "" && lowerSearchTerm !== "") {
+                    return;
+                }
+
+                if (lowerSearchTerm === "") {
+                    otherMatches.push(entry);
+                } else {
+                    if (lowerName === lowerSearchTerm) {
+                        exactNameMatches.push(entry);
+                    } else if (lowerName.includes(lowerSearchTerm) || lowerKeyword.includes(lowerSearchTerm)) {
+                        otherMatches.push(entry);
+                    }
+                }
+            });
+
+            exactNameMatches.sort((a, b) => a.originalIndex - b.originalIndex);
+            otherMatches.sort((a, b) => a.originalIndex - b.originalIndex);
+
+            currentFilteredAndOrderedData = [...exactNameMatches, ...otherMatches];
+        }
+
+        // Hàm render danh sách từ khóa
+        function renderKeywords(dataToRender) {
+            keywordListDiv.innerHTML = '';
+            loadingIndicator.classList.add('hidden');
+
+            if (Object.keys(processedDictionaryData).length === 0 && !isDictionaryLoadedSuccessfully) {
+                const li = document.createElement('li');
+                li.className = 'p-1.5 rounded-lg bg-red-100 text-red-700 font-bold cursor-pointer transition duration-200';
+                li.textContent = 'Ối dồi ôi';
+                li.dataset.keyword = "Ối dồi ôi";
+                li.addEventListener('click', () => displayContent("Ối dồi ôi"));
+                keywordListDiv.appendChild(li);
+                displayContent("Ối dồi ôi");
+                return;
+            }
+
+            if (dataToRender.length === 0) {
+                const noResultDiv = document.createElement('div');
+                noResultDiv.className = 'p-1.5 rounded-lg text-gray-500 italic';
+                noResultDiv.innerHTML = 'Không tìm thấy từ khóa nào phù hợp. Nếu bạn muốn xem lại mục lục, hãy xóa ô tìm kiếm và gõ `mucluc`';
+                keywordListDiv.appendChild(noResultDiv);
+                displayContent('');
+                return;
+            }
+
+            const ul = document.createElement('ul');
+            ul.className = 'space-y-0.5';
+            dataToRender.forEach(entry => {
+                const li = document.createElement('li');
+                li.className = 'p-1 rounded-md hover:bg-green-100 cursor-pointer transition duration-200 text-sm font-medium active:bg-green-200';
+                li.textContent = entry.name;
+                li.dataset.keyword = entry.keyword;
+                li.style.color = getCategoryColor(entry.category);
+                li.addEventListener('click', () => displayContent(entry.keyword));
+                ul.appendChild(li);
+            });
+            keywordListDiv.appendChild(ul);
+
+            if (dataToRender.length > 0) {
+                displayContent(dataToRender[0].keyword);
+            } else {
+                displayContent('');
+            }
+        }
+
+        // Hàm tải dữ liệu từ điển
+        async function loadDictionaryData() {
+            try {
+                loadingIndicator.classList.remove('hidden');
+                const response = await fetch(DICTIONARY_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const rawData = await response.json();
+                processedDictionaryData = processRawData(rawData);
+                isDictionaryLoadedSuccessfully = true;
+                filterAndOrderData("");
+                renderKeywords(currentFilteredAndOrderedData);
+            } catch (error) {
+                console.error("Lỗi khi tải từ điển:", error);
+                isDictionaryLoadedSuccessfully = false;
+                renderKeywords([]);
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        // --- Gemini API Integration ---
+        generateInsightBtn.addEventListener('click', async () => {
+            // Check if AI feature is enabled via the manual override flag
+            if (!ENABLE_AI_MANUALLY_OVERRIDE) {
+                insightText.textContent = "Tính năng AI hiện đang tắt.";
+                insightOutput.classList.remove('hidden');
+                return;
+            }
+            if (!currentDisplayedEntry) {
+                insightText.textContent = "Vui lòng chọn một từ khóa để tạo thông tin mở rộng.";
+                insightOutput.classList.remove('hidden');
+                return;
+            }
+
+            insightOutput.classList.remove('hidden');
+            insightText.textContent = "";
+            insightLoading.classList.remove('hidden');
+            generateInsightBtn.disabled = true;
+
+            const termName = currentDisplayedEntry.name;
+            const termDefinition = currentDisplayedEntry.content;
+
+            const prompt = `Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa. Trả lời bằng tiếng Việt.`;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // Canvas will automatically provide it at runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    insightText.textContent = text;
+                } else {
+                    insightText.textContent = "Rất tiếc, không thể tạo thông tin mở rộng lúc này. Vui lòng thử lại sau.";
+                    console.error("Gemini API response format unexpected:", result);
+                }
+            } catch (error) {
+                insightText.textContent = "Đã xảy ra lỗi khi kết nối với Gemini API. Vui lòng kiểm tra kết nối mạng và thử lại.";
+                console.error("Lỗi khi gọi Gemini API:", error);
+            } finally {
+                insightLoading.classList.add('hidden');
+                generateInsightBtn.disabled = false;
+            }
+        });
+        // --- End Gemini API Integration ---
+
+        // Xử lý sự kiện tìm kiếm
+        searchInput.addEventListener('input', (event) => {
+            const searchTerm = event.target.value;
+            filterAndOrderData(searchTerm);
+            renderKeywords(currentFilteredAndOrderedData);
+        });
+
+        // Khởi tạo Zictionary khi tải trang
+        document.addEventListener('DOMContentLoaded', loadDictionaryData);
+    </script>
+</body>
+</html>
