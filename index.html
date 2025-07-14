@@ -193,8 +193,8 @@
     <script>
         // Defines available languages for the dictionary.
         const LANGUAGES = [
-            { code: 'vi', name: 'Tiếng Việt' },
             { code: 'en', name: 'English' },
+            { code: 'vi', name: 'Tiếng Việt' },
             { code: 'ja', name: '日本語' },
             { code: 'zh', name: '中文' }
         ];
@@ -202,116 +202,116 @@
         // Object containing all UI translations
         const translations = {
             'search_placeholder': {
-                'vi': 'Tìm kiếm',
                 'en': 'Search',
+                'vi': 'Tìm kiếm',
                 'ja': '検索',
                 'zh': '搜索'
             },
             'keywords_title': {
-                'vi': 'Từ khóa �',
                 'en': 'Keywords 📚',
+                'vi': 'Từ khóa 📚',
                 'ja': 'キーワード 📚',
                 'zh': '关键词 📚'
             },
             'welcome_title': {
-                'vi': 'Cảm ơn bạn đã tìm đọc Zictionary.',
                 'en': 'Thank you for reading Zictionary.',
+                'vi': 'Cảm ơn bạn đã tìm đọc Zictionary.',
                 'ja': 'Zictionaryをご覧いただきありがとうございます。',
                 'zh': '感谢您阅读Zictionary。'
             },
             'welcome_message': {
-                'vi': 'Zictionary đang được tải xuống và có thể mất khoảng tối đa 15s để tải. Nếu sau 15s mà màn hình vẫn kẹt, có thể có gì đó sai sai đã xảy ra. Báo lại SweetSea nếu bạn phát hiện ra bất cứ lỗi nào nhé',
                 'en': 'Zictionary is being downloaded and may take up to 15 seconds to load. If the screen is still stuck after 15 seconds, something might have gone wrong. Please report to SweetSea if you find any errors.',
+                'vi': 'Zictionary đang được tải xuống và có thể mất khoảng tối đa 15s để tải. Nếu sau 15s mà màn hình vẫn kẹt, có thể có gì đó sai sai đã xảy ra. Báo lại SweetSea nếu bạn phát hiện ra bất cứ lỗi nào nhé',
                 'ja': 'Zictionaryをダウンロード中です。読み込みには最大15秒ほどかかる場合があります。15秒経過しても画面が固まっている場合は、何か問題が発生している可能性があります。エラーを発見した場合はSweetSeaに報告してください。',
                 'zh': 'Zictionary正在下载，可能需要最多15秒才能加载。如果15秒后屏幕仍然卡住，可能出了问题。如果您发现任何错误，请向SweetSea报告。'
             },
             'open_link_button': {
-                'vi': 'Mở liên kết',
                 'en': 'Open link',
+                'vi': 'Mở liên kết',
                 'ja': 'リンクを開く',
                 'zh': '打开链接'
             },
             'ai_section_title': {
-                'vi': 'Thông tin mở rộng ✨',
                 'en': 'Extended Information ✨',
+                'vi': 'Thông tin mở rộng ✨',
                 'ja': '拡張情報 ✨',
                 'zh': '扩展信息 ✨'
             },
             'generate_insight_button': {
-                'vi': 'Tạo thông tin mở rộng',
                 'en': 'Generate Insight',
+                'vi': 'Tạo thông tin mở rộng',
                 'ja': '洞察を生成',
                 'zh': '生成见解'
             },
             'loading_dictionary': {
-                'vi': 'Đang tải Zictionary... ⏳',
                 'en': 'Loading Zictionary... ⏳',
+                'vi': 'Đang tải Zictionary... ⏳',
                 'ja': 'Zictionaryを読み込み中... ⏳',
                 'zh': '正在加载Zictionary... ⏳'
             },
             'generating_insight': {
-                'vi': 'Đang tạo thông tin... 🧠',
                 'en': 'Generating insight... 🧠',
-                'ja': '洞察を生成中... ?',
+                'vi': 'Đang tạo thông tin... 🧠',
+                'ja': '洞察を生成中... 🧠',
                 'zh': '正在生成见解... 🧠'
             },
             'ai_disabled': {
-                'vi': 'Tính năng AI hiện đang tắt.',
                 'en': 'AI feature is currently disabled.',
+                'vi': 'Tính năng AI hiện đang tắt.',
                 'ja': 'AI機能は現在無効です。',
                 'zh': 'AI功能当前已禁用。'
             },
             'ai_select_keyword': {
-                'vi': 'Vui lòng chọn một từ khóa để tạo thông tin mở rộng.',
                 'en': 'Please select a keyword to generate extended information.',
+                'vi': 'Vui lòng chọn một từ khóa để tạo thông tin mở rộng.',
                 'ja': '拡張情報を生成するには、キーワードを選択してください。',
                 'zh': '请选择一个关键词以生成扩展信息。'
             },
             'ai_generation_failed': {
-                'vi': 'Rất tiếc, không thể tạo thông tin mở rộng lúc này. Vui lòng thử lại sau.',
                 'en': 'Sorry, unable to generate extended information at this time. Please try again later.',
+                'vi': 'Rất tiếc, không thể tạo thông tin mở rộng lúc này. Vui lòng thử lại sau.',
                 'ja': '申し訳ありませんが、現在拡張情報を生成できません。後でもう一度お試しください。',
                 'zh': '抱歉，暂时无法生成扩展信息。请稍后再试。'
             },
             'ai_connection_error': {
-                'vi': 'Đã xảy ra lỗi khi kết nối với Gemini API. Vui lòng kiểm tra kết nối mạng và thử lại.',
                 'en': 'An error occurred while connecting to the Gemini API. Please check your network connection and try again.',
+                'vi': 'Đã xảy ra lỗi khi kết nối với Gemini API. Vui lòng kiểm tra kết nối mạng và thử lại.',
                 'ja': 'Gemini APIへの接続中にエラーが発生しました。ネットワーク接続を確認して、もう一度お試しください。',
                 'zh': '连接到Gemini API时发生错误。请检查您的网络连接并重试。'
             },
             'error_loading_dictionary_title': {
-                'vi': 'Không tải được từ điển 😭',
                 'en': 'Failed to load dictionary ?',
+                'vi': 'Không tải được từ điển 😭',
                 'ja': '辞書の読み込みに失敗しました 😭',
                 'zh': '字典加载失败 😭'
             },
             'error_loading_dictionary_message': {
-                'vi': 'Zictionary chưa tải được dữ liệu rồi. Có gì đó sai sai chăng?',
                 'en': 'Zictionary failed to load data. Something might be wrong?',
+                'vi': 'Zictionary chưa tải được dữ liệu rồi. Có gì đó sai sai chăng?',
                 'ja': 'Zictionaryのデータ読み込みに失敗しました。何か問題があるようです。',
                 'zh': 'Zictionary数据加载失败。可能出了问题？'
             },
             'keyword_not_found_title': {
-                'vi': 'Không tìm thấy từ khóa',
                 'en': 'Keyword not found',
+                'vi': 'Không tìm thấy từ khóa',
                 'ja': 'キーワードが見つかりません',
                 'zh': '未找到关键词'
             },
             'keyword_not_found_message': {
-                'vi': 'Không tìm thấy từ khóa nào phù hợp. Nếu bạn muốn xem lại mục lục, hãy xóa ô tìm kiếm và gõ `mucluc`',
                 'en': 'No matching keywords found. If you want to see the index again, clear the search box and type `mucluc`',
+                'vi': 'Không tìm thấy từ khóa nào phù hợp. Nếu bạn muốn xem lại mục lục, hãy xóa ô tìm kiếm và gõ `mucluc`',
                 'ja': '一致するキーワードが見つかりません。目次を再度表示したい場合は、検索ボックスをクリアして「mucluc」と入力してください。',
                 'zh': '未找到匹配的关键词。如果您想再次查看目录，请清除搜索框并输入`mucluc`'
             },
             'error_loading_dictionary_list_item': {
-                'vi': 'Lỗi tải từ điển',
                 'en': 'Error loading dictionary',
+                'vi': 'Lỗi tải từ điển',
                 'ja': '辞書読み込みエラー',
                 'zh': '字典加载エラー'
             },
             'ai_prompt_base': {
-                'vi': "Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa.",
                 'en': "Based on the term '${termName}' and its definition: '${termDefinition}', provide a short paragraph (maximum 3 sentences) about an interesting fact, a practical application, or a broader context related to this term in the field of puzzle games or technology in general. Do not just rephrase the definition.",
+                'vi': "Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa.",
                 'ja': "用語「${termName}」とその定義「${termDefinition}」に基づいて、パズルゲームや一般的なテクノロジーの分野におけるこの用語に関連する興味深い事実、実用的な応用、またはより広い文脈について短い段落（最大3文）を提供してください。定義を言い換えるだけではありません",
                 'zh': "根据术语“${termName}”及其定义：“${termDefinition}”，提供一个关于该术语在益智游戏或一般技术领域中相关的有趣事实、实际应用或更广泛背景的简短段落（最多3句话）。"
             }
@@ -328,9 +328,9 @@
 
         /**
          * Manual override to force-enable or disable the AI feature.
-         * Set to `true` to force-enable, `false` to disable unless an API key is available.
+         * Set to `true` to force-enable, `false` to disable, only enable if you have API key
          */
-        const ENABLE_AI_MANUALLY_OVERRIDE = true;
+        const ENABLE_AI_MANUALLY_OVERRIDE = false;
 
         // Global state variables
         let processedDictionaryData = {};
@@ -339,7 +339,7 @@
         let isDictionaryLoadedSuccessfully = false;
         let currentDisplayedEntry = null;
         let currentDisplayedKeyword = null; 
-        let currentLanguage = localStorage.getItem('language') || 'vi'; // Default language is Vietnamese
+        let currentLanguage = localStorage.getItem('language') || 'en'; // Default language is English
 
         // DOM element references (initialized within DOMContentLoaded)
         let keywordListDiv;
