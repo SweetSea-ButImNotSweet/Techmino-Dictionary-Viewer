@@ -7,8 +7,6 @@
     <!-- Load Tailwind CSS for responsive and clean styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* CSS for accessibility preferences - removed unused media queries */
-
         /* Load custom font from GitHub CDN */
         @font-face {
             font-family: 'Proportional';
@@ -193,6 +191,14 @@
     <script src="https://cdn.jsdelivr.net/gh/techmino-hub/techmino-hub-source-code@main/public/scripts/background.min.js"></script>
 
     <script>
+        // Defines available languages for the dictionary.
+        const LANGUAGES = [
+            { code: 'vi', name: 'Tiếng Việt' },
+            { code: 'en', name: 'English' },
+            { code: 'ja', name: '日本語' },
+            { code: 'zh', name: '中文' }
+        ];
+
         // Object containing all UI translations
         const translations = {
             'search_placeholder': {
@@ -202,7 +208,7 @@
                 'zh': '搜索'
             },
             'keywords_title': {
-                'vi': 'Từ khóa 📚',
+                'vi': 'Từ khóa �',
                 'en': 'Keywords 📚',
                 'ja': 'キーワード 📚',
                 'zh': '关键词 📚'
@@ -275,7 +281,7 @@
             },
             'error_loading_dictionary_title': {
                 'vi': 'Không tải được từ điển 😭',
-                'en': 'Failed to load dictionary 😭',
+                'en': 'Failed to load dictionary ?',
                 'ja': '辞書の読み込みに失敗しました 😭',
                 'zh': '字典加载失败 😭'
             },
@@ -302,6 +308,12 @@
                 'en': 'Error loading dictionary',
                 'ja': '辞書読み込みエラー',
                 'zh': '字典加载エラー'
+            },
+            'ai_prompt_base': {
+                'vi': "Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa.",
+                'en': "Based on the term '${termName}' and its definition: '${termDefinition}', provide a short paragraph (maximum 3 sentences) about an interesting fact, a practical application, or a broader context related to this term in the field of puzzle games or technology in general. Do not just rephrase the definition.",
+                'ja': "用語「${termName}」とその定義「${termDefinition}」に基づいて、パズルゲームや一般的なテクノロジーの分野におけるこの用語に関連する興味深い事実、実用的な応用、またはより広い文脈について短い段落（最大3文）を提供してください。定義を言い換えるだけではありません",
+                'zh': "根据术语“${termName}”及其定义：“${termDefinition}”，提供一个关于该术语在益智游戏或一般技术领域中相关的有趣事实、实际应用或更广泛背景的简短段落（最多3句话）。"
             }
         };
 
@@ -318,7 +330,7 @@
          * Manual override to force-enable or disable the AI feature.
          * Set to `true` to force-enable, `false` to disable unless an API key is available.
          */
-        const ENABLE_AI_MANUALLY_OVERRIDE = false;
+        const ENABLE_AI_MANUALLY_OVERRIDE = true;
 
         // Global state variables
         let processedDictionaryData = {};
@@ -463,16 +475,6 @@
         }
 
         /**
-         * Defines available languages for the dictionary.
-         */
-        const LANGUAGES = [
-            { code: 'vi', name: 'Tiếng Việt' },
-            { code: 'en', name: 'English' },
-            { code: 'ja', name: '日本語' },
-            { code: 'zh', name: '中文' }
-        ];
-
-        /**
          * Processes raw dictionary data into a more usable object format.
          * Filters out entries containing "{{FNNS:" or "{{FNNS|".
          * @param {Array<Array<string>>} data - The raw dictionary data.
@@ -509,7 +511,9 @@
             currentDisplayedEntry = processedDictionaryData[keyword];
             linkContainer.classList.add('hidden');
             insightOutput.classList.add('hidden');
-            generateInsightBtn.classList.add('hidden'); // Hide button by default
+            
+            // Ensure generateInsightBtn is hidden by default, and only shown if conditions are met
+            generateInsightBtn.classList.add('hidden'); 
 
             if (currentDisplayedEntry) {
                 contentTitle.textContent = currentDisplayedEntry.name;
@@ -518,16 +522,18 @@
                     openLinkText.textContent = translations.open_link_button[currentLanguage];
                     linkContainer.classList.remove('hidden');
                 }
-                // Only show generate insight button if AI feature is manually enabled
+                // Show generate insight button only if AI feature is manually enabled AND a valid entry is displayed
                 if (ENABLE_AI_MANUALLY_OVERRIDE) {
                     generateInsightBtn.classList.remove('hidden');
                 }
             } else if (keyword === "error_loading_dictionary") { // Use error code for internal logic
                 contentTitle.textContent = translations.error_loading_dictionary_title[currentLanguage];
                 contentBody.innerHTML = `<p>${translations.error_loading_dictionary_message[currentLanguage]}</p>`;
+                // generateInsightBtn.classList.add('hidden'); // Already hidden above
             } else {
                 contentTitle.textContent = translations.keyword_not_found_title[currentLanguage];
                 contentBody.innerHTML = `<p>${translations.keyword_not_found_message[currentLanguage]}</p>`;
+                // generateInsightBtn.classList.add('hidden'); // Already hidden above
             }
 
             // Apply active state to the newly selected keyword
@@ -649,21 +655,6 @@
         }
 
         /**
-         * Handles the click event for the "Generate Insight" button.
-         * Calls the Gemini API to generate extended information based on the current keyword.
-         */
-        // Gemini API Integration
-        // This event listener is moved inside DOMContentLoaded to ensure generateInsightBtn is defined.
-        // generateInsightBtn.addEventListener('click', async () => { ... });
-
-        /**
-         * Handles the input event for the search bar.
-         * Filters and re-renders the keyword list based on the search term.
-         */
-        // This event listener is moved inside DOMContentLoaded to ensure searchInput is defined.
-        // searchInput.addEventListener('input', (event) => { ... });
-
-        /**
          * Initializes Zictionary when the DOM is fully loaded.
          * Sets up DOM element references, language selection, and event listeners.
          */
@@ -738,8 +729,11 @@
                 const termName = currentDisplayedEntry.name;
                 const termDefinition = currentDisplayedEntry.content;
 
-                // Prompt remains in Vietnamese as it's the request to the LLM
-                const prompt = `Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa. Trả lời bằng tiếng Việt.`;
+                // Construct the prompt using the translated base and dynamic terms
+                const promptTemplate = translations.ai_prompt_base[currentLanguage];
+                const prompt = promptTemplate
+                    .replace('${termName}', termName)
+                    .replace('${termDefinition}', termDefinition);
 
                 try {
                     let chatHistory = [];
@@ -777,6 +771,13 @@
             // Initial load of dictionary and UI text update
             updateUIText(); 
             loadDictionaryData();
+
+            // Ensure AI feature section is hidden if ENABLE_AI_MANUALLY_OVERRIDE is false
+            if (!ENABLE_AI_MANUALLY_OVERRIDE) {
+                aiFeatureSection.classList.add('hidden');
+            } else {
+                aiFeatureSection.classList.remove('hidden');
+            }
         });
     </script>
 </body>
