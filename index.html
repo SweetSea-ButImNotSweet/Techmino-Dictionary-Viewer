@@ -519,7 +519,7 @@
                 contentTitle.textContent = currentDisplayedEntry.name;
                 contentBody.innerHTML = `<p class="whitespace-pre-wrap">${currentDisplayedEntry.content}</p>`;
                 if (currentDisplayedEntry.link) {
-                    openLinkText.href = currentDisplayedEntry.link;
+                    linkContainer.href = currentDisplayedEntry.link;
                     linkContainer.classList.remove('hidden');
                 }
                 // Show generate insight button only if AI feature is manually enabled AND a valid entry is displayed
