@@ -7,11 +7,42 @@
     <!-- Tải Tailwind CSS để giao diện thật xinh xắn và tiện lợi -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Tải font chữ đặc biệt của anh Sea */
+        @font-face {
+            font-family: 'Proportional';
+            src: url('https://cdn.jsdelivr.net/gh/26F-Studio/Techmino@main/parts/fonts/proportional.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap; /* Đảm bảo font được hiển thị ngay cả khi tải chậm */
+        }
+
+        /* Đặt màu nền gốc cho root để nền sao là màu đen tuyệt đối */
+        :root {
+            color-scheme: dark light;
+            background-color: black;
+        }
+
         /* Tùy chỉnh font chữ để mọi thứ trông thật dễ đọc và thân thiện */
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Proportional', 'Inter', sans-serif; /* Áp dụng font mới của anh Sea */
             /* Thêm transition cho việc chuyển đổi màu khi bật/tắt dark mode */
             transition: background-color 0.3s ease, color 0.3s ease;
+            /* Đảm bảo body không có màu nền để canvas hiển thị */
+            background-color: transparent; 
+        }
+
+        /* CSS cho canvas nền sao, đảm bảo nó luôn ở phía sau và chiếm toàn màn hình */
+        canvas#background {
+            position: fixed; /* Cố định vị trí so với màn hình */
+            left: 0;         /* Di chuyển về góc trên bên trái */
+            top: 0;
+            width: 100%;     /* Chiều rộng 100% */
+            width: 100vw;    /* Chiều rộng viewport */
+            width: 100lvw;   /* Chiều rộng viewport động (cho các trình duyệt hỗ trợ) */
+            height: 100%;    /* Chiều cao 100% */
+            height: 100vh;   /* Chiều cao viewport */
+            height: 100lvh;  /* Chiều cao viewport động (cho các trình duyệt hỗ trợ) */
+            z-index: -1;     /* Đẩy canvas ra phía sau các nội dung khác */
         }
 
         /* Dark mode base styles, sẽ được áp dụng khi class 'dark' có mặt trên html tag */
@@ -19,36 +50,36 @@
             background-color: #000000; /* Pure black for OLED */
             color: #e2e8f0; /* light gray text */
         }
-        html.dark .bg-green-50 { background-color: #000000; /* Pure black for OLED */ }
         html.dark .text-gray-800 { color: #e2e8f0; }
 
-        /* Component backgrounds */
-        html.dark .bg-white { background-color: #1a1a1a; /* Darker gray for components */ }
+        /* Component backgrounds với độ trong suốt 0.62 */
+        html.dark .bg-white { background-color: rgba(26, 26, 26, 0.62); } /* Darker gray cho các components chính */
         html.dark .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
         html.dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.2); }
 
         /* Header colors */
-        html.dark .text-green-600 { color: #48bb78; /* Slightly brighter green for dark mode header */ }
+        html.dark .text-green-600 { color: #48bb78; } /* Slightly brighter green for dark mode header */
 
-        /* Search input colors */
-        html.dark .bg-green-50 { background-color: #222222; /* Darker background for input */ }
-        html.dark .border-green-300 { border-color: #2f855a; /* Darker green border */ }
+        /* Search input colors với độ trong suốt 0.62 */
+        html.dark .bg-green-50 { background-color: rgba(34, 34, 34, 0.62); } /* Darker background cho input */
+        html.dark .border-green-300 { border-color: #2f855a; } /* Darker green border */
         html.dark .focus\:ring-green-400:focus { --tw-ring-color: #2f855a; }
         html.dark .text-green-700 { color: #e2e8f0; }
-        html.dark .placeholder-green-400::placeholder { color: #a0aec0; }
+        /* Cải thiện tương phản cho placeholder text trong dark mode */
+        html.dark .placeholder-green-400::placeholder { color: #d0d0d0; } /* Sáng hơn để dễ đọc */
         html.dark svg.text-green-400 { color: #48bb78; }
 
         /* Keyword list header */
         html.dark .text-green-600 { color: #48bb78; }
         html.dark .border-green-200 { border-color: #2f855a; }
 
-        /* Keyword list items */
-        html.dark .hover\:bg-green-100:hover { background-color: #222222; } /* Darker hover */
-        html.dark .active\:bg-green-200:active { background-color: #0a0a0a; } /* Even darker active */
+        /* Keyword list items với độ trong suốt 0.62 */
+        html.dark .hover\:bg-green-100:hover { background-color: rgba(34, 34, 34, 0.62); } /* Darker hover */
+        html.dark .active\:bg-green-200:active { background-color: rgba(10, 10, 10, 0.62); } /* Even darker active */
         html.dark .text-sm.font-medium { color: #e2e8f0; } /* Default text color in dark mode */
 
-        /* Active keyword item */
-        html.dark .bg-green-100 { background-color: #0a0a0a; } /* Darker background for active */
+        /* Active keyword item với độ trong suốt 0.62 */
+        html.dark .bg-green-100 { background-color: rgba(10, 10, 10, 0.62); } /* Darker background for active */
         html.dark .text-green-800 { color: #81e6d9; } /* Lighter text for active */
 
         /* Content section */
@@ -61,8 +92,8 @@
         html.dark .hover\:bg-green-600:hover { background-color: #276749; } /* Even darker hover */
         html.dark .focus\:ring-green-400:focus { --tw-ring-color: #2f855a; }
 
-        /* Info box */
-        html.dark .p-4.bg-gray-100 { background-color: #222222; } /* Darker background */
+        /* Info box với độ trong suốt 0.62 */
+        html.dark .p-4.bg-gray-100 { background-color: rgba(34, 34, 34, 0.62); } /* Darker background */
         html.dark .border-gray-200 { border-color: #2f855a; }
         html.dark .text-gray-700 { color: #e2e8f0; }
 
@@ -81,9 +112,13 @@
         }
     </style>
 </head>
-<body class="bg-green-50 text-gray-800">
+<!-- Đặt class 'dark' trực tiếp vào thẻ html để Dark Theme luôn được áp dụng -->
+<body class="text-e2e8f0">
+    <!-- Canvas cho nền sao, đặt ngay sau body để nó là lớp dưới cùng -->
+    <canvas id="background"></canvas>
+
     <div class="min-h-screen flex flex-col">
-        <!-- Phần header với thanh tìm kiếm và nút Dark Mode của anh Sea -->
+        <!-- Phần header với thanh tìm kiếm của anh Sea -->
         <header class="p-4 bg-white shadow-md rounded-b-xl sticky top-0 z-10">
             <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <h1 class="text-3xl font-extrabold text-green-600 whitespace-nowrap">Zictionary <span class="text-xl">🌿</span></h1>
@@ -99,12 +134,7 @@
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
-                <!-- Nút bật/tắt Dark Mode -->
-                <div class="flex gap-2">
-                    <button id="theme-toggle" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400">
-                        <span id="theme-icon">🌙</span>
-                    </button>
-                </div>
+                <!-- Nút bật/tắt Dark Mode đã được gỡ bỏ -->
             </div>
         </header>
 
@@ -125,7 +155,7 @@
 
             <!-- Ngăn nội dung chi tiết bên phải nè, đây là nơi chứa đựng những điều thú vị đó -->
             <section id="content-display" class="flex-1 bg-white p-6 rounded-xl shadow-lg overflow-y-auto"
-                       style="max-height: calc(100vh - 120px);">
+                             style="max-height: calc(100vh - 120px);">
                 <h2 class="text-3xl font-bold text-green-700 mb-4 pb-2 border-b-2 border-green-300" id="content-title">Chào mừng đến với Zictionary! 🌱</h2>
                 <div class="text-gray-700 leading-relaxed text-lg" id="content-body">
                     <p>
@@ -156,6 +186,9 @@
         </main>
     </div>
 
+    <!-- Tải script nền sao từ jsdelivr -->
+    <script src="https://cdn.jsdelivr.net/gh/techmino-hub/techmino-hub-source-code@main/public/scripts/background.min.js"></script>
+
     <script>
         // URL để tải dữ liệu từ CDN, giúp tránh lỗi CORS
         const DICTIONARY_URL = "https://cdn.jsdelivr.net/gh/SweetSea-ButImNotSweet/Techmino-Dictionary-Viewer@main/data/dict_vi.json";
@@ -172,6 +205,8 @@
         let selectedKeywordElement = null;
         let isDictionaryLoadedSuccessfully = false;
         let currentDisplayedEntry = null;
+        // Biến để lưu từ khóa đang được hiển thị, giúp duy trì nội dung khi đổi theme
+        let currentDisplayedKeyword = null; 
 
         // DOM elements cache for optimization
         const keywordListDiv = document.getElementById('keyword-list');
@@ -181,8 +216,6 @@
         const linkContainer = document.getElementById('link-container');
         const contentLink = document.getElementById('content-link');
         const loadingIndicator = document.getElementById('loading-indicator');
-        const themeToggle = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
         const aiFeatureSection = document.getElementById('ai-feature-section');
         const generateInsightBtn = document.getElementById('generate-insight-btn');
         const insightOutput = document.getElementById('insight-output');
@@ -245,47 +278,43 @@
             'default': 'gray', // Fallback nếu category không khớp
         };
 
-        // Hàm để lấy màu cho từng category, có tính đến dark mode và màu nhóm
+        // Hàm để lấy màu cho từng category, luôn ở chế độ dark mode
         function getCategoryColor(category) {
-            const isDarkMode = document.documentElement.classList.contains('dark');
+            const isDarkMode = true; // Luôn là true vì Dark Theme là mặc định
             if (category === '') { // Xử lý màu cho mục nhóm riêng (màu trắng tinh khôi hoặc đen)
-                return isDarkMode ? 'rgb(255,255,255)' : 'rgb(0,0,0)';
+                return 'rgb(255,255,255)'; // Luôn là trắng trong Dark Mode
             }
 
             const colorKey = TYPE_COLOR_MAPPING[category] || TYPE_COLOR_MAPPING['default'];
-            const hsv = COLOR_HSV_VALUES[colorKey];
+            let hsv = COLOR_HSV_VALUES[colorKey];
             if (hsv) {
-                const [r, g, b] = hsvToRgb(hsv[0], hsv[1], hsv[2]);
+                let [h, s, v] = hsv;
+                // Điều chỉnh độ sáng (V) cho dark mode để đảm bảo tương phản tốt
+                if (isDarkMode) {
+                    v = Math.max(v, 0.7); // Đảm bảo độ sáng tối thiểu là 0.7
+                }
+                const [r, g, b] = hsvToRgb(h, s, v);
                 return `rgb(${r}, ${g}, ${b})`;
             }
             return 'inherit'; // Fallback
         }
 
         // --- Theme Logic ---
-        function applyTheme(theme) {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                themeIcon.textContent = '☀️';
-            } else {
-                document.documentElement.classList.remove('dark');
-                themeIcon.textContent = '🌙';
-            }
-            localStorage.setItem('theme', theme);
-            renderKeywords(currentFilteredAndOrderedData); // Re-render for color update
-        }
+        // Hàm applyTheme đã được đơn giản hóa để chỉ áp dụng Dark Theme
+        function applyTheme() {
+            renderKeywords(currentFilteredAndOrderedData); // Re-render để cập nhật màu sắc
 
-        themeToggle.addEventListener('click', () => {
-            applyTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
-        });
+            // Sau khi render lại keywords, hiển thị lại nội dung của từ khóa đang chọn
+            if (currentDisplayedKeyword) {
+                displayContent(currentDisplayedKeyword);
+            }
+        }
 
         // Apply theme on initial load
         document.addEventListener('DOMContentLoaded', () => {
-            const storedTheme = localStorage.getItem('theme');
-            if (storedTheme) {
-                applyTheme(storedTheme);
-            } else {
-                applyTheme('light'); // Default to light if no theme is set
-            }
+            // Luôn áp dụng Dark Theme khi tải trang
+            document.documentElement.classList.add('dark'); // Đảm bảo class 'dark' có mặt
+            applyTheme(); // Gọi applyTheme để đảm bảo các màu sắc category và nội dung được cập nhật
 
             // Apply AI feature state based on the manual override
             if (!ENABLE_AI_MANUALLY_OVERRIDE) {
@@ -314,6 +343,9 @@
 
         // Hàm hiển thị nội dung chi tiết của từ khóa
         function displayContent(keyword) {
+            // Lưu từ khóa đang hiển thị
+            currentDisplayedKeyword = keyword; 
+
             if (selectedKeywordElement) {
                 selectedKeywordElement.classList.remove('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
                 selectedKeywordElement.style.color = getCategoryColor(processedDictionaryData[selectedKeywordElement.dataset.keyword]?.category || '');
@@ -335,9 +367,9 @@
                 if (ENABLE_AI_MANUALLY_OVERRIDE) {
                     generateInsightBtn.classList.remove('hidden');
                 }
-            } else if (keyword === "Ối dồi ôi") {
-                contentTitle.textContent = "Từ điển không thể load �";
-                contentBody.innerHTML = "<p>Xin lỗi anh Sea! Zictionary chưa tải được dữ liệu rồi. Em sẽ cố gắng hơn lần sau nha! 🥺</p>";
+            } else if (keyword === "Chết dở rồi.....") {
+                contentTitle.textContent = "Từ điển không thể load 😭";
+                contentBody.innerHTML = "<p>Zictionary chưa tải được dữ liệu rồi. Có gì đó sai sai chăng?</p>";
             } else {
                 contentTitle.textContent = `Không tìm thấy từ khóa`;
                 contentBody.innerHTML = "<p>Không tìm thấy từ khóa nào phù hợp. Nếu bạn muốn xem lại mục lục, hãy xóa ô tìm kiếm và gõ `mucluc`</p>";
@@ -366,14 +398,10 @@
                     return;
                 }
 
-                if (lowerSearchTerm === "") {
+                if (lowerName === lowerSearchTerm) {
+                    exactNameMatches.push(entry);
+                } else if (lowerName.includes(lowerSearchTerm) || lowerKeyword.includes(lowerSearchTerm)) {
                     otherMatches.push(entry);
-                } else {
-                    if (lowerName === lowerSearchTerm) {
-                        exactNameMatches.push(entry);
-                    } else if (lowerName.includes(lowerSearchTerm) || lowerKeyword.includes(lowerSearchTerm)) {
-                        otherMatches.push(entry);
-                    }
                 }
             });
 
@@ -421,10 +449,14 @@
             });
             keywordListDiv.appendChild(ul);
 
-            if (dataToRender.length > 0) {
-                displayContent(dataToRender[0].keyword);
-            } else {
-                displayContent('');
+            // Chỉ hiển thị nội dung của từ khóa đầu tiên nếu chưa có từ khóa nào được chọn trước đó
+            // hoặc nếu danh sách từ khóa được render lại và từ khóa hiện tại không còn trong danh sách.
+            if (!currentDisplayedKeyword || !dataToRender.some(entry => entry.keyword === currentDisplayedKeyword)) {
+                if (dataToRender.length > 0) {
+                    displayContent(dataToRender[0].keyword);
+                } else {
+                    displayContent('');
+                }
             }
         }
 
@@ -444,7 +476,8 @@
             } catch (error) {
                 console.error("Lỗi khi tải từ điển:", error);
                 isDictionaryLoadedSuccessfully = false;
-                renderKeywords([]);
+                // Đổi thông báo lỗi cho phù hợp với Dark Theme
+                displayContent("Chết dở rồi....."); 
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
