@@ -347,6 +347,7 @@
         let contentBody;
         let searchInput;
         let openLinkText;
+        let contentLinkAnchor;
         let loadingIndicator;
         let aiFeatureSection;
         let generateInsightBtn;
@@ -519,7 +520,7 @@
                 contentTitle.textContent = currentDisplayedEntry.name;
                 contentBody.innerHTML = `<p class="whitespace-pre-wrap">${currentDisplayedEntry.content}</p>`;
                 if (currentDisplayedEntry.link) {
-                    openLinkText.href = currentDisplayedEntry.link;
+                    contentLinkAnchor.href = currentDisplayedEntry.link;
                     linkContainer.classList.remove('hidden');
                 }
                 // Show generate insight button only if AI feature is manually enabled AND a valid entry is displayed
@@ -665,6 +666,7 @@
             contentBody = document.getElementById('content-body');
             searchInput = document.getElementById('search-input');
             openLinkText = document.getElementById('open-link-text');
+            contentLinkAnchor = document.getElementById('content-link')
             loadingIndicator = document.getElementById('loading-indicator');
             aiFeatureSection = document.getElementById('ai-feature-section');
             generateInsightBtn = document.getElementById('generate-insight-btn');
