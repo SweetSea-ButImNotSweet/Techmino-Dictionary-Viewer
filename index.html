@@ -338,7 +338,7 @@
         let selectedKeywordElement = null;
         let isDictionaryLoadedSuccessfully = false;
         let currentDisplayedEntry = null;
-        let currentDisplayedKeyword = null; 
+        let currentDisplayedKeyword = null;
         let currentLanguage = localStorage.getItem('language') || 'en'; // Default language is English
 
         // DOM element references (initialized within DOMContentLoaded)
@@ -500,7 +500,7 @@
          * @param {string} keyword - The keyword to display content for.
          */
         function displayContent(keyword) {
-            currentDisplayedKeyword = keyword; 
+            currentDisplayedKeyword = keyword;
 
             // Remove active state from previously selected keyword
             if (selectedKeywordElement) {
@@ -511,15 +511,15 @@
             currentDisplayedEntry = processedDictionaryData[keyword];
             linkContainer.classList.add('hidden');
             insightOutput.classList.add('hidden');
-            
+
             // Ensure generateInsightBtn is hidden by default, and only shown if conditions are met
-            generateInsightBtn.classList.add('hidden'); 
+            generateInsightBtn.classList.add('hidden');
 
             if (currentDisplayedEntry) {
                 contentTitle.textContent = currentDisplayedEntry.name;
                 contentBody.innerHTML = `<p class="whitespace-pre-wrap">${currentDisplayedEntry.content}</p>`;
                 if (currentDisplayedEntry.link) {
-                    linkContainer.href = currentDisplayedEntry.link;
+                    openLinkText.href = currentDisplayedEntry.link;
                     linkContainer.classList.remove('hidden');
                 }
                 // Show generate insight button only if AI feature is manually enabled AND a valid entry is displayed
@@ -769,7 +769,7 @@
             });
 
             // Initial load of dictionary and UI text update
-            updateUIText(); 
+            updateUIText();
             loadDictionaryData();
 
             // Ensure AI feature section is hidden if ENABLE_AI_MANUALLY_OVERRIDE is false
