@@ -1,124 +1,103 @@
 <!DOCTYPE html>
+<!-- THAY ĐỔI: Bỏ class "dark" vì style tối giờ là mặc định trong CSS -->
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--Lock Dark Reader from auto applying Dark theme (as the page is already dark)-->
+    <!-- Khóa Dark Reader để không tự động áp dụng giao diện tối (vì trang đã có sẵn) -->
     <meta name="darkreader-lock">
     <title>Zictionary</title>
-    <!-- Load Tailwind CSS for responsive and clean styling -->
+    <!-- Tải Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Load custom font from GitHub CDN */
+        /* Tải font chữ tùy chỉnh từ GitHub CDN */
         @font-face {
             font-family: 'Proportional';
             src: url('https://cdn.jsdelivr.net/gh/26F-Studio/Techmino@main/parts/fonts/proportional.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-            font-display: swap; /* Ensure font is displayed even if loading is slow */
+            font-display: swap; /* Đảm bảo font được hiển thị ngay cả khi tải chậm */
         }
 
-        /* Set root background to pure black for OLED displays */
         :root {
-            color-scheme: dark light;
+            /* THAY ĐỔI: Chỉ định rõ color-scheme là dark để trình duyệt hiểu đây là giao diện tối */
+            color-scheme: dark;
             background-color: black;
+
+            /* Biến màu cho giao diện tối */
+            --dark-bg-main: rgba(26, 26, 26, 0.75);
+            --dark-bg-input: rgba(34, 34, 34, 0.75);
+            --dark-bg-hover: rgba(34, 34, 34, 0.75);
+            --dark-bg-active: rgba(10, 10, 10, 0.75);
+            --dark-border-color: #2f855a;
+            --dark-text-primary: #e2e8f0;
+            --dark-text-secondary: #cbd5e0;
+            --dark-text-green: #48bb78;
+            --dark-text-active: #81e6d9;
         }
 
-        /* Apply custom font and transition for theme changes */
         body {
-            font-family: 'Proportional', 'Inter', sans-serif; /* Apply custom font */
-            transition: background-color 0.3s ease, color 0.3s ease;
-            background-color: transparent; /* Ensure canvas background is visible */
+            font-family: 'Proportional', 'Inter', sans-serif;
+            background-color: transparent; /* Để nền canvas có thể nhìn thấy */
+            color: var(--dark-text-primary);
         }
 
-        /* CSS for the star background canvas, ensuring it's behind other content and full screen */
+        /* CSS cho canvas nền sao, đảm bảo nó nằm sau và toàn màn hình */
         canvas#background {
-            position: fixed; /* Fixed position relative to the viewport */
-            left: 0;         /* Align to top-left corner */
+            position: fixed;
+            left: 0;
             top: 0;
-            width: 100%;     /* Full width */
-            width: 100vw;    /* Full viewport width */
-            width: 100lvw;   /* Dynamic viewport width (for supported browsers) */
-            height: 100%;    /* Full height */
-            height: 100vh;   /* Full viewport height */
-            height: 100lvh;  /* Dynamic viewport height (for supported browsers) */
-            z-index: -1;     /* Place canvas behind other content */
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
         }
 
-        /* Dark mode base styles, applied when 'dark' class is present on html tag */
-        html.dark {
-            background-color: #000000; /* Pure black for OLED */
-            color: #e2e8f0; /* Light gray text */
-        }
-        html.dark .text-gray-800 { color: #e2e8f0; }
+        /* * TỐI ƯU HÓA CHỐNG-FLASH:
+         * Các style cho giao diện tối được áp dụng trực tiếp và mặc định.
+         * Dùng `!important` để đảm bảo các style này ghi đè lên các class của Tailwind
+         * ngay cả sau khi Tailwind JIT đã chạy, ngăn chặn hiện tượng "flash".
+        */
+        .bg-white { background-color: var(--dark-bg-main) !important; }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3) !important; }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important; }
 
-        /* Component backgrounds with 0.75 opacity */
-        html.dark .bg-white { background-color: rgba(26, 26, 26, 0.75); } /* Darker gray for main components */
-        html.dark .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3); }
-        html.dark .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.2); }
+        .text-green-600 { color: var(--dark-text-green) !important; }
 
-        /* Header colors */
-        html.dark .text-green-600 { color: #48bb78; } /* Slightly brighter green for dark mode header */
+        .bg-green-50 { background-color: var(--dark-bg-input) !important; }
+        .border-green-300 { border-color: var(--dark-border-color) !important; }
+        .focus\:ring-green-400:focus { --tw-ring-color: var(--dark-border-color) !important; }
+        .text-green-700 { color: var(--dark-text-primary) !important; }
+        .placeholder-green-400::placeholder { color: #d0d0d0 !important; }
+        svg.text-green-400 { color: var(--dark-text-green) !important; }
 
-        /* Search input colors with 0.75 opacity */
-        html.dark .bg-green-50 { background-color: rgba(34, 34, 34, 0.75); } /* Darker background for input */
-        html.dark .border-green-300 { border-color: #2f855a; } /* Darker green border */
-        html.dark .focus\:ring-green-400:focus { --tw-ring-color: #2f855a; }
-        html.dark .text-green-700 { color: #e2e8f0; }
-        /* Improve contrast for placeholder text in dark mode */
-        html.dark .placeholder-green-400::placeholder { color: #d0d0d0; } /* Lighter for better readability */
-        html.dark svg.text-green-400 { color: #48bb78; }
+        .border-green-200 { border-color: var(--dark-border-color) !important; }
+        .hover\:bg-green-100:hover { background-color: var(--dark-bg-hover) !important; }
+        .active\:bg-green-200:active { background-color: var(--dark-bg-active) !important; }
 
-        /* Keyword list header */
-        html.dark .text-green-600 { color: #48bb78; }
-        html.dark .border-green-200 { border-color: #2f855a; }
+        .bg-green-100 { background-color: var(--dark-bg-active) !important; }
+        .text-green-800 { color: var(--dark-text-active) !important; }
 
-        /* Keyword list items with 0.75 opacity */
-        html.dark .hover\:bg-green-100:hover { background-color: rgba(34, 34, 34, 0.75); } /* Darker hover */
-        html.dark .active\:bg-green-200:active { background-color: rgba(10, 10, 10, 0.75); } /* Even darker active */
-        html.dark .text-sm.font-medium { color: #e2e8f0; } /* Default text color in dark mode */
+        .text-gray-700 { color: var(--dark-text-secondary) !important; }
 
-        /* Active keyword item with 0.75 opacity */
-        html.dark .bg-green-100 { background-color: rgba(10, 10, 10, 0.75); } /* Darker background for active */
-        html.dark .text-green-800 { color: #81e6d9; } /* Lighter text for active */
+        .bg-green-500 { background-color: var(--dark-border-color) !important; }
+        .hover\:bg-green-600:hover { background-color: #276749 !important; }
 
-        /* Content section */
-        html.dark .text-green-700 { color: #48bb78; }
-        html.dark .border-green-300 { border-color: #2f855a; }
-        html.dark .text-gray-700 { color: #cbd5e0; }
+        /* Cần chỉ định rõ hơn để ghi đè Tailwind */
+        .p-4.bg-gray-100 { background-color: var(--dark-bg-input) !important; }
+        .border-gray-200 { border-color: var(--dark-border-color) !important; }
 
-        /* Link button */
-        html.dark .bg-green-500 { background-color: #2f855a; } /* Darker green button */
-        html.dark .hover\:bg-green-600:hover { background-color: #276749; } /* Even darker hover */
-        html.dark .focus\:ring-green-400:focus { --tw-ring-color: #2f855a; }
-
-        /* Info box with 0.75 opacity */
-        html.dark .p-4.bg-gray-100 { background-color: rgba(34, 34, 34, 0.75); } /* Darker background */
-        html.dark .border-gray-200 { border-color: #2f855a; }
-        html.dark .text-gray-700 { color: #e2e8f0; }
-
-        /* Scrollbar for dark mode */
-        html.dark ::-webkit-scrollbar-track {
-            background: #222222;
-        }
-
-        html.dark ::-webkit-scrollbar-thumb {
-            background-color: #1a1a1a;
-            border: 2px solid #222222;
-        }
-
-        html.dark ::-webkit-scrollbar-thumb:hover {
-            background-color: #0a0a0a;
-        }
+        /* Thanh cuộn cho giao diện tối */
+        ::-webkit-scrollbar-track { background: #222; }
+        ::-webkit-scrollbar-thumb { background-color: #1a1a1a; border: 2px solid #222; }
+        ::-webkit-scrollbar-thumb:hover { background-color: #0a0a0a; }
     </style>
 </head>
-<!-- Apply 'dark' class directly to the html tag for consistent Dark Theme application -->
-<body class="text-e2e8f0">
-    <!-- Canvas for the star background, positioned as the bottom layer -->
+<body>
+    <!-- Canvas cho nền sao -->
     <canvas id="background"></canvas>
 
-    <div class="min-h-screen flex flex-col">
-        <!-- Header section with search bar -->
+    <div class="h-screen flex flex-col">
+        <!-- Header section -->
         <header class="p-4 bg-white shadow-md rounded-b-xl sticky top-0 z-10">
             <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
                 <h1 class="text-3xl font-extrabold text-green-600 whitespace-nowrap">Zictionary <span class="text-xl">🌿</span></h1>
@@ -129,36 +108,28 @@
                         placeholder="Tìm kiếm"
                         class="w-full p-3 pl-10 pr-4 rounded-full border-2 border-green-300 focus:ring-2 focus:ring-green-400 bg-green-50 text-green-700 placeholder-green-400 transition duration-300 shadow-sm"
                     >
-                    <!-- Search icon -->
                     <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 text-green-400" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
                         <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
-                <!-- Language selector -->
                 <select id="language-select" class="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-400">
-                    <!-- Language options will be dynamically added by JavaScript -->
+                    <!-- Các tùy chọn ngôn ngữ sẽ được thêm bằng JavaScript -->
                 </select>
             </div>
         </header>
 
-        <!-- Main content section, divided into two columns -->
+        <!-- Main content section -->
         <main class="flex-1 flex flex-col md:flex-row p-4 gap-4 container mx-auto overflow-hidden">
-            <!-- Left sidebar for keyword list -->
-            <aside class="w-full md:w-1/3 lg:w-1/4 bg-white p-4 rounded-xl shadow-lg flex-shrink-0 overflow-y-auto"
-                   style="max-height: calc(100vh - 120px);">
+            <aside class="w-full md:w-1/3 lg:w-1/4 bg-white p-4 rounded-xl shadow-lg flex-shrink-0 h-full overflow-y-auto">
                 <h2 id="keywords-title" class="text-2xl font-semibold text-green-600 mb-4 pb-2 border-b-2 border-green-200">Từ khóa 📚</h2>
                 <div id="keyword-list" class="space-y-2">
-                    <!-- Keywords will be dynamically added by JavaScript -->
-                    <!-- Loading indicator -->
                     <div id="loading-indicator" class="text-center text-green-500 dark:text-green-400 font-medium py-4">
                         Đang tải Zictionary... ⏳
                     </div>
                 </div>
             </aside>
 
-            <!-- Right section for detailed content display -->
-            <section id="content-display" class="flex-1 bg-white p-6 rounded-xl shadow-lg overflow-y-auto"
-                             style="max-height: calc(100vh - 120px);">
+            <section id="content-display" class="flex-1 bg-white p-6 rounded-xl shadow-lg h-full overflow-y-auto">
                 <h2 id="content-title" class="text-3xl font-bold text-green-700 mb-4 pb-2 border-b-2 border-green-300">Chào mừng đến với Zictionary! 🌱</h2>
                 <div id="content-body" class="text-gray-700 leading-relaxed text-lg">
                     <p>
@@ -172,7 +143,6 @@
                     </a>
                 </div>
 
-                <!-- New feature section: Extend knowledge with Gemini API -->
                 <div id="ai-feature-section" class="mt-8 pt-4 border-t-2 border-green-200 dark:border-green-700">
                     <h3 id="ai-section-title" class="text-2xl font-semibold text-green-600 dark:text-green-500 mb-4">Thông tin mở rộng ✨</h3>
                     <button id="generate-insight-btn" class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition duration-300 flex items-center">
@@ -180,7 +150,6 @@
                         <span id="generate-insight-text">Tạo thông tin mở rộng</span>
                     </button>
                     <div id="insight-output" class="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hidden">
-                        <!-- Content generated by LLM will be displayed here -->
                         <p id="insight-text" class="whitespace-pre-wrap"></p>
                         <div id="insight-loading" class="text-center py-2 hidden">Đang tạo thông tin... 🧠</div>
                     </div>
@@ -189,600 +158,336 @@
         </main>
     </div>
 
-    <!-- Load star background script from jsdelivr -->
+    <!-- Tải script nền sao -->
     <script src="https://cdn.jsdelivr.net/gh/techmino-hub/techmino-hub-source-code@ef75e52d922195c1442d9bea55895f93e9139d2e/public/scripts/background.min.js"></script>
 
     <script>
-        // Defines available languages for the dictionary.
-        const LANGUAGES = [
-            { code: 'en', name: 'English' },
-            { code: 'vi', name: 'Tiếng Việt' },
-            { code: 'ja', name: '日本語' },
-            { code: 'zh', name: '中文' }
-        ];
+        (function() {
+            // Cấu hình và dữ liệu tĩnh
+            const config = {
+                enableAiManually: true, // Bật/tắt tính năng AI
+                languages: [
+                    { code: 'en', name: 'English' },
+                    { code: 'vi', name: 'Tiếng Việt' },
+                    { code: 'ja', name: '日本語' },
+                    { code: 'zh', name: '中文' }
+                ],
+                getDictionaryUrl: (langCode) => `https://cdn.jsdelivr.net/gh/SweetSea-ButImNotSweet/Techmino-Dictionary-Viewer@main/dict/${langCode}.json`
+            };
 
-        // Object containing all UI translations
-        const translations = {
-            'search_placeholder': {
-                'en': 'Search',
-                'vi': 'Tìm kiếm',
-                'ja': '検索',
-                'zh': '搜索'
-            },
-            'keywords_title': {
-                'en': 'Keywords 📚',
-                'vi': 'Từ khóa 📚',
-                'ja': 'キーワード 📚',
-                'zh': '关键词 📚'
-            },
-            'welcome_title': {
-                'en': 'Thank you for reading Zictionary.',
-                'vi': 'Cảm ơn bạn đã tìm đọc Zictionary.',
-                'ja': 'Zictionaryをご覧いただきありがとうございます。',
-                'zh': '感谢您阅读Zictionary。'
-            },
-            'welcome_message': {
-                'en': 'Zictionary is being downloaded and may take up to 15 seconds to load. If the screen is still stuck after 15 seconds, something might have gone wrong. Please report to SweetSea if you find any errors.',
-                'vi': 'Zictionary đang được tải xuống và có thể mất khoảng tối đa 15s để tải. Nếu sau 15s mà màn hình vẫn kẹt, có thể có gì đó sai sai đã xảy ra. Báo lại SweetSea nếu bạn phát hiện ra bất cứ lỗi nào nhé',
-                'ja': 'Zictionaryをダウンロード中です。読み込みには最大15秒ほどかかる場合があります。15秒経過しても画面が固まっている場合は、何か問題が発生している可能性があります。エラーを発見した場合はSweetSeaに報告してください。',
-                'zh': 'Zictionary正在下载，可能需要最多15秒才能加载。如果15秒后屏幕仍然卡住，可能出了问题。如果您发现任何错误，请向SweetSea报告。'
-            },
-            'open_link_button': {
-                'en': 'Open link',
-                'vi': 'Mở liên kết',
-                'ja': 'リンクを開く',
-                'zh': '打开链接'
-            },
-            'ai_section_title': {
-                'en': 'Extended Information ✨',
-                'vi': 'Thông tin mở rộng ✨',
-                'ja': '拡張情報 ✨',
-                'zh': '扩展信息 ✨'
-            },
-            'generate_insight_button': {
-                'en': 'Generate Insight',
-                'vi': 'Tạo thông tin mở rộng',
-                'ja': '洞察を生成',
-                'zh': '生成见解'
-            },
-            'loading_dictionary': {
-                'en': 'Loading Zictionary... ⏳',
-                'vi': 'Đang tải Zictionary... ⏳',
-                'ja': 'Zictionaryを読み込み中... ⏳',
-                'zh': '正在加载Zictionary... ⏳'
-            },
-            'generating_insight': {
-                'en': 'Generating insight... 🧠',
-                'vi': 'Đang tạo thông tin... 🧠',
-                'ja': '洞察を生成中... 🧠',
-                'zh': '正在生成见解... 🧠'
-            },
-            'ai_disabled': {
-                'en': 'AI feature is currently disabled.',
-                'vi': 'Tính năng AI hiện đang tắt.',
-                'ja': 'AI機能は現在無効です。',
-                'zh': 'AI功能当前已禁用。'
-            },
-            'ai_select_keyword': {
-                'en': 'Please select a keyword to generate extended information.',
-                'vi': 'Vui lòng chọn một từ khóa để tạo thông tin mở rộng.',
-                'ja': '拡張情報を生成するには、キーワードを選択してください。',
-                'zh': '请选择一个关键词以生成扩展信息。'
-            },
-            'ai_generation_failed': {
-                'en': 'Sorry, unable to generate extended information at this time. Please try again later.',
-                'vi': 'Rất tiếc, không thể tạo thông tin mở rộng lúc này. Vui lòng thử lại sau.',
-                'ja': '申し訳ありませんが、現在拡張情報を生成できません。後でもう一度お試しください。',
-                'zh': '抱歉，暂时无法生成扩展信息。请稍后再试。'
-            },
-            'ai_connection_error': {
-                'en': 'An error occurred while connecting to the Gemini API. Please check your network connection and try again.',
-                'vi': 'Đã xảy ra lỗi khi kết nối với Gemini API. Vui lòng kiểm tra kết nối mạng và thử lại.',
-                'ja': 'Gemini APIへの接続中にエラーが発生しました。ネットワーク接続を確認して、もう一度お試しください。',
-                'zh': '连接到Gemini API时发生错误。请检查您的网络连接并重试。'
-            },
-            'error_loading_dictionary_title': {
-                'en': 'Failed to load dictionary ?',
-                'vi': 'Không tải được từ điển 😭',
-                'ja': '辞書の読み込みに失敗しました 😭',
-                'zh': '字典加载失败 😭'
-            },
-            'error_loading_dictionary_message': {
-                'en': 'Zictionary failed to load data. Something might be wrong?',
-                'vi': 'Zictionary chưa tải được dữ liệu rồi. Có gì đó sai sai chăng?',
-                'ja': 'Zictionaryのデータ読み込みに失敗しました。何か問題があるようです。',
-                'zh': 'Zictionary数据加载失败。可能出了问题？'
-            },
-            'keyword_not_found_title': {
-                'en': 'Keyword not found',
-                'vi': 'Không tìm thấy từ khóa',
-                'ja': 'キーワードが見つかりません',
-                'zh': '未找到关键词'
-            },
-            'keyword_not_found_message': {
-                'en': 'No matching keywords found. If you want to see the index again, clear the search box and type `mucluc`',
-                'vi': 'Không tìm thấy từ khóa nào phù hợp. Nếu bạn muốn xem lại mục lục, hãy xóa ô tìm kiếm và gõ `mucluc`',
-                'ja': '一致するキーワードが見つかりません。目次を再度表示したい場合は、検索ボックスをクリアして「mucluc」と入力してください。',
-                'zh': '未找到匹配的关键词。如果您想再次查看目录，请清除搜索框并输入`mucluc`'
-            },
-            'error_loading_dictionary_list_item': {
-                'en': 'Error loading dictionary',
-                'vi': 'Lỗi tải từ điển',
-                'ja': '辞書読み込みエラー',
-                'zh': '字典加载エラー'
-            },
-            'ai_prompt_base': {
-                'en': "Based on the term '${termName}' and its definition: '${termDefinition}', provide a short paragraph (maximum 3 sentences) about an interesting fact, a practical application, or a broader context related to this term in the field of puzzle games or technology in general. Do not just rephrase the definition.",
-                'vi': "Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa.",
-                'ja': "用語「${termName}」とその定義「${termDefinition}」に基づいて、パズルゲームや一般的なテクノロジーの分野におけるこの用語に関連する興味深い事実、実用的な応用、またはより広い文脈について短い段落（最大3文）を提供してください。定義を言い換えるだけではありません",
-                'zh': "根据术语“${termName}”及其定义：“${termDefinition}”，提供一个关于该术语在益智游戏或一般技术领域中相关的有趣事实、实际应用或更广泛背景的简短段落（最多3句话）。"
-            }
-        };
+            const translations = {
+                'search_placeholder': { 'en': 'Search', 'vi': 'Tìm kiếm', 'ja': '検索', 'zh': '搜索' },
+                'keywords_title': { 'en': 'Keywords 📚', 'vi': 'Từ khóa 📚', 'ja': 'キーワード 📚', 'zh': '关键词 📚' },
+                'welcome_title': { 'en': 'Thank you for reading Zictionary.', 'vi': 'Cảm ơn bạn đã tìm đọc Zictionary.', 'ja': 'Zictionaryをご覧いただきありがとうございます。', 'zh': '感谢您阅读Zictionary。' },
+                'welcome_message': { 'en': 'Zictionary is being downloaded...', 'vi': 'Zictionary đang được tải xuống...', 'ja': 'Zictionaryをダウンロード中です...', 'zh': 'Zictionary正在下载...' },
+                'open_link_button': { 'en': 'Open link', 'vi': 'Mở liên kết', 'ja': 'リンクを開く', 'zh': '打开链接' },
+                'ai_section_title': { 'en': 'Extended Information ✨', 'vi': 'Thông tin mở rộng ✨', 'ja': '拡張情報 ✨', 'zh': '扩展信息 ✨' },
+                'generate_insight_button': { 'en': 'Generate Insight', 'vi': 'Tạo thông tin mở rộng', 'ja': '洞察を生成', 'zh': '生成见解' },
+                'loading_dictionary': { 'en': 'Loading Zictionary... ⏳', 'vi': 'Đang tải Zictionary... ⏳', 'ja': 'Zictionaryを読み込み中... ⏳', 'zh': '正在加载Zictionary... ⏳' },
+                'generating_insight': { 'en': 'Generating insight... 🧠', 'vi': 'Đang tạo thông tin... 🧠', 'ja': '洞察を生成中... 🧠', 'zh': '正在生成见解... 🧠' },
+                'ai_disabled': { 'en': 'AI feature is currently disabled.', 'vi': 'Tính năng AI hiện đang tắt.', 'ja': 'AI機能は現在無効です。', 'zh': 'AI功能当前已禁用。' },
+                'ai_select_keyword': { 'en': 'Please select a keyword to generate extended information.', 'vi': 'Vui lòng chọn một từ khóa để tạo thông tin mở rộng.', 'ja': '拡張情報を生成するには、キーワードを選択してください。', 'zh': '请选择一个关键词以生成扩展信息。' },
+                'ai_generation_failed': { 'en': 'Sorry, unable to generate extended information.', 'vi': 'Rất tiếc, không thể tạo thông tin mở rộng lúc này.', 'ja': '申し訳ありませんが、現在拡張情報を生成できません。', 'zh': '抱歉，暂时无法生成扩展信息。' },
+                'ai_connection_error': { 'en': 'An error occurred while connecting to the Gemini API.', 'vi': 'Đã xảy ra lỗi khi kết nối với Gemini API.', 'ja': 'Gemini APIへの接続中にエラーが発生しました。', 'zh': '连接到Gemini API时发生错误。' },
+                'error_loading_dictionary_title': { 'en': 'Failed to load dictionary 😭', 'vi': 'Không tải được từ điển 😭', 'ja': '辞書の読み込みに失敗しました 😭', 'zh': '字典加载失败 😭' },
+                'error_loading_dictionary_message': { 'en': 'Zictionary failed to load data.', 'vi': 'Zictionary chưa tải được dữ liệu rồi.', 'ja': 'Zictionaryのデータ読み込みに失敗しました。', 'zh': 'Zictionary数据加载失败。' },
+                'keyword_not_found_title': { 'en': 'Keyword not found', 'vi': 'Không tìm thấy từ khóa', 'ja': 'キーワードが見つかりません', 'zh': '未找到关键词' },
+                'keyword_not_found_message': { 'en': 'No matching keywords found.', 'vi': 'Không tìm thấy từ khóa nào phù hợp.', 'ja': '一致するキーワードが見つかりません。', 'zh': '未找到匹配的关键词。' },
+                'error_loading_dictionary_list_item': { 'en': 'Error loading dictionary', 'vi': 'Lỗi tải từ điển', 'ja': '辞書読み込みエラー', 'zh': '字典加载エラー' },
+                'ai_prompt_base': { 'en': "Based on the term '${termName}' and its definition: '${termDefinition}', provide a short paragraph (maximum 3 sentences) about an interesting fact, a practical application, or a broader context related to this term in the field of puzzle games or technology in general. Do not just rephrase the definition.", 'vi': "Dựa vào thuật ngữ '${termName}' và định nghĩa của nó: '${termDefinition}', hãy cung cấp một đoạn văn ngắn (tối đa 3 câu) về một thông tin thú vị, một ứng dụng thực tế, hoặc một bối cảnh rộng hơn liên quan đến thuật ngữ này trong lĩnh vực game xếp gạch hoặc công nghệ nói chung. Đừng chỉ diễn giải lại định nghĩa.", 'ja': "用語「${termName}」とその定義「${termDefinition}」に基づいて、パズルゲームや一般的なテクノロジーの分野におけるこの用語に関連する興味深い事実、実用的な応用、またはより広い文脈について短い段落（最大3文）を提供してください。定義を言い換えるだけではありません", 'zh': "根据术语“${termName}”及其定义：“${termDefinition}”，提供一个关于该术语在益智游戏或一般技术领域中相关的有趣事实、实际应用或更广泛背景的简短段落（最多3句话）。" }
+            };
 
-        /**
-         * Generates the dictionary URL based on the provided language code.
-         * @param {string} langCode - The two-letter language code (e.g., 'en', 'vi').
-         * @returns {string} The full URL to the dictionary JSON file.
-         */
-        function getDictionaryUrl(langCode) {
-            return `https://cdn.jsdelivr.net/gh/SweetSea-ButImNotSweet/Techmino-Dictionary-Viewer@main/dict/${langCode}.json`;
-        }
+            const app = {
+                state: {
+                    dictionary: {},
+                    filteredData: [],
+                    selectedKeywordEl: null,
+                    currentEntry: null,
+                    currentKeyword: null,
+                    currentLanguage: null,
+                },
+                elements: {},
+                methods: {
+                    init() {
+                        app.state.currentLanguage = app.methods.getInitialLanguage();
+                        app.methods.cacheDomElements();
+                        app.methods.setupAiFeature();
+                        app.methods.setupLanguageSelector();
+                        app.methods.bindEvents();
+                        app.methods.updateUIText();
+                        app.methods.loadDictionaryData();
+                    },
 
-        /**
-         * Manual override to force-enable or disable the AI feature.
-         * Set to `true` to force-enable, `false` to disable, only enable if you have API key
-         */
-        const ENABLE_AI_MANUALLY_OVERRIDE = false;
+                    getInitialLanguage() {
+                        const savedLang = localStorage.getItem('language');
+                        const supportedLangs = config.languages.map(l => l.code);
+                        if (savedLang && supportedLangs.includes(savedLang)) {
+                            return savedLang;
+                        }
+                        const browserLang = navigator.language.split('-')[0];
+                        if (supportedLangs.includes(browserLang)) {
+                            return browserLang;
+                        }
+                        return 'en';
+                    },
 
-        // Global state variables
-        let processedDictionaryData = {};
-        let currentFilteredAndOrderedData = [];
-        let selectedKeywordElement = null;
-        let isDictionaryLoadedSuccessfully = false;
-        let currentDisplayedEntry = null;
-        let currentDisplayedKeyword = null;
-        let currentLanguage = localStorage.getItem('language') || 'en'; // Default language is English
+                    cacheDomElements() {
+                        app.elements = {
+                            keywordList: document.getElementById('keyword-list'),
+                            contentTitle: document.getElementById('content-title'),
+                            contentBody: document.getElementById('content-body'),
+                            searchInput: document.getElementById('search-input'),
+                            openLinkText: document.getElementById('open-link-text'),
+                            contentLink: document.getElementById('content-link'),
+                            linkContainer: document.getElementById('link-container'),
+                            loadingIndicator: document.getElementById('loading-indicator'),
+                            aiFeatureSection: document.getElementById('ai-feature-section'),
+                            generateInsightBtn: document.getElementById('generate-insight-btn'),
+                            generateInsightText: document.getElementById('generate-insight-text'),
+                            insightOutput: document.getElementById('insight-output'),
+                            insightText: document.getElementById('insight-text'),
+                            insightLoading: document.getElementById('insight-loading'),
+                            languageSelect: document.getElementById('language-select'),
+                            keywordsTitle: document.getElementById('keywords-title'),
+                            aiSectionTitle: document.getElementById('ai-section-title'),
+                        };
+                    },
 
-        // DOM element references (initialized within DOMContentLoaded)
-        let keywordListDiv;
-        let contentTitle;
-        let contentBody;
-        let searchInput;
-        let openLinkText;
-        let contentLinkAnchor;
-        let loadingIndicator;
-        let aiFeatureSection;
-        let generateInsightBtn;
-        let generateInsightText;
-        let insightOutput;
-        let insightText;
-        let insightLoading;
-        let languageSelect;
-        let keywordsTitle;
-        let aiSectionTitle;
-        let linkContainer;
+                    bindEvents() {
+                        app.elements.searchInput.addEventListener('input', (e) => {
+                            app.methods.filterAndRender(e.target.value);
+                        });
+                        app.elements.languageSelect.addEventListener('change', (e) => {
+                            app.methods.changeLanguage(e.target.value);
+                        });
+                        app.elements.generateInsightBtn.addEventListener('click', app.methods.handleGenerateInsight);
+                    },
 
-        /**
-         * Converts HSV (Hue, Saturation, Value) to RGB (Red, Green, Blue) color values.
-         * @param {number} h - Hue (0-1).
-         * @param {number} s - Saturation (0-1).
-         * @param {number} v - Value (0-1).
-         * @returns {number[]} An array containing RGB values (0-255).
-         */
-        function hsvToRgb(h, s, v) {
-            let r, g, b;
-            h = h % 1;
-            if (s <= 0) { r = g = b = v; return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]; }
-            h *= 6;
-            let i = Math.floor(h);
-            let f = h - i;
-            let p = v * (1 - s);
-            let q = v * (1 - f * s);
-            let t = v * (1 - (1 - f) * s);
-            switch (i % 6) {
-                case 0: r = v; g = t; b = p; break;
-                case 1: r = q; g = v; b = p; break;
-                case 2: r = p; g = v; b = t; break;
-                case 3: r = p; g = q; b = v; break;
-                case 4: r = t; g = p; b = v; break;
-                case 5: r = v; g = p; b = q; break;
-            }
-            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-        }
+                    setupAiFeature() {
+                        if (config.enableAiManually) {
+                            app.elements.aiFeatureSection.classList.remove('hidden');
+                        } else {
+                            app.elements.aiFeatureSection.classList.add('hidden');
+                        }
+                    },
 
-        // Define HSV values for various colors (adjusted for contrast)
-        const COLOR_HSV_VALUES = {
-            'red': [0.00, 1.00, 1.00], // Bright Red
-            'fire': [0.04, 1.00, 0.95],
-            'orange': [0.09, 1.00, 0.95],
-            'yellow': [0.15, 0.98, 0.95],
+                    setupLanguageSelector() {
+                        config.languages.forEach(lang => {
+                            const option = document.createElement('option');
+                            option.value = lang.code;
+                            option.textContent = lang.name;
+                            app.elements.languageSelect.appendChild(option);
+                        });
+                        app.elements.languageSelect.value = app.state.currentLanguage;
+                    },
 
-            // Darker greens for better visibility
-            'lime': [0.20, 0.95, 0.40],
-            'jade': [0.25, 0.95, 0.35],
-            'green': [0.33, 0.95, 0.30],
-            'aqua': [0.47, 0.90, 0.30],
-            'cyan': [0.53, 0.95, 0.40],
-            'navy': [0.56, 0.95, 0.50],
-            'sea': [0.61, 0.95, 0.50],
-            'blue': [0.64, 0.95, 0.45],
-            'violet': [0.74, 0.90, 0.40],
-            'purple': [0.80, 0.95, 0.40],
-            'magenta': [0.86, 0.95, 0.35],
-            'wine': [0.92, 0.95, 0.45],
+                    changeLanguage(langCode) {
+                        app.state.currentLanguage = langCode;
+                        localStorage.setItem('language', langCode);
+                        app.state.currentKeyword = null;
+                        app.methods.updateUIText();
+                        app.methods.loadDictionaryData();
+                    },
 
-            'black': [0.00, 0.00, 0.00], // Pure black
-            'white': [0.00, 0.00, 1.00], // Pure white
-        };
+                    updateUIText() {
+                        const lang = app.state.currentLanguage;
+                        app.elements.searchInput.placeholder = translations.search_placeholder[lang];
+                        app.elements.keywordsTitle.textContent = translations.keywords_title[lang];
+                        app.elements.openLinkText.textContent = translations.open_link_button[lang];
+                        app.elements.aiSectionTitle.textContent = translations.ai_section_title[lang];
+                        app.elements.generateInsightText.textContent = translations.generate_insight_button[lang];
+                        app.elements.loadingIndicator.textContent = translations.loading_dictionary[lang];
+                        app.elements.insightLoading.textContent = translations.generating_insight[lang];
+                        if (!app.state.currentKeyword) {
+                            app.elements.contentTitle.textContent = translations.welcome_title[lang];
+                            app.elements.contentBody.innerHTML = `<p>${translations.welcome_message[lang]}</p>`;
+                        }
+                    },
 
-        // Map categories to color names from COLOR_HSV_VALUES
-        const TYPE_COLOR_MAPPING = {
-            'help': 'yellow', 'org': 'fire', 'game': 'cyan', 'term': 'red',
-            'setup': 'yellow', 'pattern': 'jade', 'command': 'navy',
-            'english': 'blue', 'name': 'violet',
-            '': 'special_group_color', // Used for group items (empty keyword)
-            'default': 'gray', // Fallback if category does not match
-        };
+                    async loadDictionaryData() {
+                        app.elements.loadingIndicator.classList.remove('hidden');
+                        app.elements.keywordList.innerHTML = '';
+                        try {
+                            const response = await fetch(config.getDictionaryUrl(app.state.currentLanguage));
+                            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                            const rawData = await response.json();
 
-        /**
-         * Retrieves the appropriate color for a given category, ensuring good contrast in dark mode.
-         * @param {string} category - The category of the keyword.
-         * @returns {string} The RGB color string for the category.
-         */
-        function getCategoryColor(category) {
-            const isDarkMode = true; // Always true as Dark Theme is default
-            if (category === '') { // Handle color for special group items
-                return 'rgb(255,255,255)'; // Always white in Dark Mode
-            }
+                            app.state.dictionary = {};
+                            rawData.forEach(([name, keyword, category, content, link], index) => {
+                                if ((content && (content.includes("{{FNNS:") || content.includes("{{FNNS|"))) ||
+                                    (name && (name.includes("{{FNNS:") || name.includes("{{FNNS|")))) return;
+                                app.state.dictionary[keyword] = { name, keyword, category, content, link, originalIndex: index };
+                            });
 
-            const colorKey = TYPE_COLOR_MAPPING[category] || TYPE_COLOR_MAPPING['default'];
-            let hsv = COLOR_HSV_VALUES[colorKey];
-            if (hsv) {
-                let [h, s, v] = hsv;
-                // Adjust value (V) for dark mode to ensure good contrast
-                if (isDarkMode) {
-                    v = Math.max(v, 0.7); // Ensure minimum brightness is 0.7
-                }
-                const [r, g, b] = hsvToRgb(h, s, v);
-                return `rgb(${r}, ${g}, ${b})`;
-            }
-            return 'inherit'; // Fallback to inherited color
-        }
+                            app.methods.filterAndRender('');
+                        } catch (error) {
+                            console.error("Error loading dictionary:", error);
+                            app.methods.displayContent("error_loading_dictionary");
+                        } finally {
+                            app.elements.loadingIndicator.classList.add('hidden');
+                        }
+                    },
 
-        /**
-         * Applies the current theme settings.
-         * This function is simplified to only apply Dark Theme as it's the default.
-         */
-        function applyTheme() {
-            renderKeywords(currentFilteredAndOrderedData); // Re-render to update colors
+                    filterAndRender(searchTerm) {
+                        const lowerSearchTerm = searchTerm.toLowerCase().trim();
+                        if (lowerSearchTerm === '') {
+                             app.state.filteredData = Object.values(app.state.dictionary).sort((a,b) => a.originalIndex - b.originalIndex);
+                        } else {
+                            const exactMatches = [];
+                            const otherMatches = [];
+                            Object.values(app.state.dictionary).forEach(entry => {
+                                if (entry.keyword.trim() === "" && lowerSearchTerm !== "") return;
+                                const lowerName = entry.name.toLowerCase();
+                                const lowerKeyword = entry.keyword.toLowerCase();
+                                if (lowerName === lowerSearchTerm) exactMatches.push(entry);
+                                else if (lowerName.includes(lowerSearchTerm) || lowerKeyword.includes(lowerSearchTerm)) otherMatches.push(entry);
+                            });
+                            exactMatches.sort((a, b) => a.originalIndex - b.originalIndex);
+                            otherMatches.sort((a, b) => a.originalIndex - b.originalIndex);
+                            app.state.filteredData = [...exactMatches, ...otherMatches];
+                        }
+                        app.methods.renderKeywords();
+                    },
 
-            // If a keyword is currently displayed, re-display its content to apply theme changes
-            if (currentDisplayedKeyword) {
-                displayContent(currentDisplayedKeyword);
-            }
-        }
+                    renderKeywords() {
+                        app.elements.keywordList.innerHTML = '';
+                        if (app.state.filteredData.length === 0) {
+                            const noResultDiv = document.createElement('div');
+                            noResultDiv.className = 'p-1.5 rounded-lg text-gray-500 italic';
+                            noResultDiv.innerHTML = translations.keyword_not_found_message[app.state.currentLanguage];
+                            app.elements.keywordList.appendChild(noResultDiv);
+                            app.methods.displayContent('');
+                            return;
+                        }
 
-        /**
-         * Updates all UI text elements based on the current language.
-         */
-        function updateUIText() {
-            searchInput.placeholder = translations.search_placeholder[currentLanguage];
-            keywordsTitle.textContent = translations.keywords_title[currentLanguage];
-            contentTitle.textContent = translations.welcome_title[currentLanguage];
-            contentBody.innerHTML = `<p class="whitespace-pre-wrap">${translations.welcome_message[currentLanguage]}</p>`;
-            openLinkText.textContent = translations.open_link_button[currentLanguage];
-            aiSectionTitle.textContent = translations.ai_section_title[currentLanguage];
-            generateInsightText.textContent = translations.generate_insight_button[currentLanguage];
-            loadingIndicator.textContent = translations.loading_dictionary[currentLanguage];
-            insightLoading.textContent = translations.generating_insight[currentLanguage];
-        }
+                        const ul = document.createElement('ul');
+                        ul.className = 'space-y-0.5';
+                        app.state.filteredData.forEach(entry => {
+                            const li = document.createElement('li');
+                            li.className = 'p-1 rounded-md hover:bg-green-100 cursor-pointer transition duration-200 text-sm font-medium active:bg-green-200';
+                            li.textContent = entry.name;
+                            li.dataset.keyword = entry.keyword;
+                            li.style.color = app.methods.getCategoryColor(entry.category);
+                            li.addEventListener('click', () => app.methods.displayContent(entry.keyword));
+                            ul.appendChild(li);
+                        });
+                        app.elements.keywordList.appendChild(ul);
 
-        /**
-         * Processes raw dictionary data into a more usable object format.
-         * Filters out entries containing "{{FNNS:" or "{{FNNS|".
-         * @param {Array<Array<string>>} data - The raw dictionary data.
-         * @returns {Object} An object mapping keywords to their processed entries.
-         */
-        function processRawData(data) {
-            const processed = {};
-            data.forEach((entry, index) => {
-                const [name, keyword, category, content, link] = entry;
-                // Filter out entries containing "{{FNNS:" or "{{FNNS|"
-                if ((content && (content.includes("{{FNNS:") || content.includes("{{FNNS|"))) ||
-                    (name && (name.includes("{{FNNS:") || name.includes("{{FNNS|")))) {
-                    return;
-                }
-                processed[keyword] = { name, keyword, category, content, link, originalIndex: index };
-            });
-            return processed;
-        }
+                        if (!app.state.currentKeyword || !app.state.filteredData.some(e => e.keyword === app.state.currentKeyword)) {
+                            app.methods.displayContent(app.state.filteredData[0].keyword);
+                        }
+                    },
 
-        /**
-         * Displays the detailed content for a given keyword.
-         * Updates the content section and highlights the selected keyword in the list.
-         * @param {string} keyword - The keyword to display content for.
-         */
-        function displayContent(keyword) {
-            currentDisplayedKeyword = keyword;
+                    displayContent(keyword) {
+                        app.state.currentKeyword = keyword;
+                        const { elements, state } = app;
 
-            // Remove active state from previously selected keyword
-            if (selectedKeywordElement) {
-                selectedKeywordElement.classList.remove('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
-                selectedKeywordElement.style.color = getCategoryColor(processedDictionaryData[selectedKeywordElement.dataset.keyword]?.category || '');
-            }
+                        if (state.selectedKeywordEl) {
+                            state.selectedKeywordEl.classList.remove('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
+                            const prevEntry = state.dictionary[state.selectedKeywordEl.dataset.keyword];
+                            if(prevEntry) state.selectedKeywordEl.style.color = app.methods.getCategoryColor(prevEntry.category);
+                        }
 
-            currentDisplayedEntry = processedDictionaryData[keyword];
-            linkContainer.classList.add('hidden');
-            insightOutput.classList.add('hidden');
+                        state.currentEntry = state.dictionary[keyword];
+                        elements.linkContainer.classList.add('hidden');
+                        elements.insightOutput.classList.add('hidden');
+                        elements.generateInsightBtn.classList.add('hidden');
 
-            // Ensure generateInsightBtn is hidden by default, and only shown if conditions are met
-            generateInsightBtn.classList.add('hidden');
+                        const lang = state.currentLanguage;
+                        if (state.currentEntry) {
+                            elements.contentTitle.textContent = state.currentEntry.name;
+                            elements.contentBody.innerHTML = `<p class="whitespace-pre-wrap">${state.currentEntry.content}</p>`;
+                            if (state.currentEntry.link) {
+                                elements.contentLink.href = state.currentEntry.link;
+                                elements.linkContainer.classList.remove('hidden');
+                            }
+                            if (config.enableAiManually) {
+                                elements.generateInsightBtn.classList.remove('hidden');
+                            }
+                        } else if (keyword === "error_loading_dictionary") {
+                            elements.contentTitle.textContent = translations.error_loading_dictionary_title[lang];
+                            elements.contentBody.innerHTML = `<p>${translations.error_loading_dictionary_message[lang]}</p>`;
+                        } else {
+                            elements.contentTitle.textContent = translations.keyword_not_found_title[lang];
+                            elements.contentBody.innerHTML = `<p>${translations.keyword_not_found_message[lang]}</p>`;
+                        }
 
-            if (currentDisplayedEntry) {
-                contentTitle.textContent = currentDisplayedEntry.name;
-                contentBody.innerHTML = `<p class="whitespace-pre-wrap">${currentDisplayedEntry.content}</p>`;
-                if (currentDisplayedEntry.link) {
-                    contentLinkAnchor.href = currentDisplayedEntry.link;
-                    linkContainer.classList.remove('hidden');
-                }
-                // Show generate insight button only if AI feature is manually enabled AND a valid entry is displayed
-                if (ENABLE_AI_MANUALLY_OVERRIDE) {
-                    generateInsightBtn.classList.remove('hidden');
-                }
-            } else if (keyword === "error_loading_dictionary") { // Use error code for internal logic
-                contentTitle.textContent = translations.error_loading_dictionary_title[currentLanguage];
-                contentBody.innerHTML = `<p>${translations.error_loading_dictionary_message[currentLanguage]}</p>`;
-                // generateInsightBtn.classList.add('hidden'); // Already hidden above
-            } else {
-                contentTitle.textContent = translations.keyword_not_found_title[currentLanguage];
-                contentBody.innerHTML = `<p>${translations.keyword_not_found_message[currentLanguage]}</p>`;
-                // generateInsightBtn.classList.add('hidden'); // Already hidden above
-            }
+                        const newSelectedEl = document.querySelector(`#keyword-list li[data-keyword="${keyword}"]`);
+                        if (newSelectedEl) {
+                            newSelectedEl.classList.add('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
+                            newSelectedEl.style.color = '';
+                            state.selectedKeywordEl = newSelectedEl;
+                        }
+                    },
 
-            // Apply active state to the newly selected keyword
-            const newSelectedElement = document.querySelector(`#keyword-list li[data-keyword="${keyword}"]`);
-            if (newSelectedElement) {
-                newSelectedElement.classList.add('bg-green-100', 'text-green-800', 'font-bold', 'shadow-sm');
-                newSelectedElement.style.color = ''; // Reset color for active state (Tailwind default)
-                selectedKeywordElement = newSelectedElement;
-            }
-        }
+                    async handleGenerateInsight() {
+                        const { elements, state } = app;
+                        const lang = state.currentLanguage;
 
-        /**
-         * Filters and orders dictionary data based on a search term.
-         * Exact name matches are prioritized.
-         * @param {string} searchTerm - The term to filter by.
-         */
-        function filterAndOrderData(searchTerm) {
-            const lowerSearchTerm = searchTerm.toLowerCase().trim();
-            const exactNameMatches = [];
-            const otherMatches = [];
+                        if (!state.currentEntry) {
+                            elements.insightText.textContent = translations.ai_select_keyword[lang];
+                            elements.insightOutput.classList.remove('hidden');
+                            return;
+                        }
 
-            Object.values(processedDictionaryData).forEach(entry => {
-                const lowerName = entry.name.toLowerCase();
-                const lowerKeyword = entry.keyword.toLowerCase();
+                        elements.insightOutput.classList.remove('hidden');
+                        elements.insightText.textContent = "";
+                        elements.insightLoading.classList.remove('hidden');
+                        elements.generateInsightBtn.disabled = true;
 
-                // Rule: If keyword is empty, do not display in search results when a search term is present
-                if (entry.keyword.trim() === "" && lowerSearchTerm !== "") {
-                    return;
-                }
+                        const promptTemplate = translations.ai_prompt_base[lang];
+                        const prompt = promptTemplate
+                            .replace('${termName}', state.currentEntry.name)
+                            .replace('${termDefinition}', state.currentEntry.content);
 
-                if (lowerName === lowerSearchTerm) {
-                    exactNameMatches.push(entry);
-                } else if (lowerName.includes(lowerSearchTerm) || lowerKeyword.includes(lowerSearchTerm)) {
-                    otherMatches.push(entry);
-                }
-            });
+                        try {
+                            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                            const apiKey = ""; // Canvas sẽ tự cung cấp
+                            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-            exactNameMatches.sort((a, b) => a.originalIndex - b.originalIndex);
-            otherMatches.sort((a, b) => a.originalIndex - b.originalIndex);
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            const result = await response.json();
 
-            currentFilteredAndOrderedData = [...exactNameMatches, ...otherMatches];
-        }
+                            if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                                elements.insightText.textContent = result.candidates[0].content.parts[0].text;
+                            } else {
+                                throw new Error("Invalid API response format");
+                            }
+                        } catch (error) {
+                            elements.insightText.textContent = translations.ai_connection_error[lang];
+                            console.error("Error calling Gemini API:", error);
+                        } finally {
+                            elements.insightLoading.classList.add('hidden');
+                            elements.generateInsightBtn.disabled = false;
+                        }
+                    },
 
-        /**
-         * Renders the list of keywords in the sidebar.
-         * @param {Array<Object>} dataToRender - The filtered and ordered keyword data.
-         */
-        function renderKeywords(dataToRender) {
-            keywordListDiv.innerHTML = '';
-            loadingIndicator.classList.add('hidden');
+                    getCategoryColor(category) {
+                        const colorMap = { 'help': 'yellow', 'org': 'fire', 'game': 'cyan', 'term': 'red', 'setup': 'yellow', 'pattern': 'jade', 'command': 'navy', 'english': 'blue', 'name': 'violet' };
+                        const hsvMap = { 'red': [0.00, 1.00, 1.00], 'fire': [0.04, 1.00, 0.95], 'orange': [0.09, 1.00, 0.95], 'yellow': [0.15, 0.98, 0.95], 'lime': [0.20, 0.95, 0.40], 'jade': [0.25, 0.95, 0.35], 'green': [0.33, 0.95, 0.30], 'aqua': [0.47, 0.90, 0.30], 'cyan': [0.53, 0.95, 0.40], 'navy': [0.56, 0.95, 0.50], 'sea': [0.61, 0.95, 0.50], 'blue': [0.64, 0.95, 0.45], 'violet': [0.74, 0.90, 0.40], 'purple': [0.80, 0.95, 0.40], 'magenta': [0.86, 0.95, 0.35], 'wine': [0.92, 0.95, 0.45], 'black': [0.00, 0.00, 0.00], 'white': [0.00, 0.00, 1.00] };
 
-            if (Object.keys(processedDictionaryData).length === 0 && !isDictionaryLoadedSuccessfully) {
-                const li = document.createElement('li');
-                li.className = 'p-1.5 rounded-lg bg-red-100 text-red-700 font-bold cursor-pointer transition duration-200';
-                li.textContent = translations.error_loading_dictionary_list_item[currentLanguage];
-                li.dataset.keyword = "error_loading_dictionary"; // Use error code
-                li.addEventListener('click', () => displayContent("error_loading_dictionary"));
-                keywordListDiv.appendChild(li);
-                displayContent("error_loading_dictionary");
-                return;
-            }
-
-            if (dataToRender.length === 0) {
-                const noResultDiv = document.createElement('div');
-                noResultDiv.className = 'p-1.5 rounded-lg text-gray-500 italic';
-                noResultDiv.innerHTML = translations.keyword_not_found_message[currentLanguage];
-                keywordListDiv.appendChild(noResultDiv);
-                displayContent('');
-                return;
-            }
-
-            const ul = document.createElement('ul');
-            ul.className = 'space-y-0.5';
-            dataToRender.forEach(entry => {
-                const li = document.createElement('li');
-                li.className = 'p-1 rounded-md hover:bg-green-100 cursor-pointer transition duration-200 text-sm font-medium active:bg-green-200';
-                li.textContent = entry.name;
-                li.dataset.keyword = entry.keyword;
-                li.style.color = getCategoryColor(entry.category);
-                li.addEventListener('click', () => displayContent(entry.keyword));
-                ul.appendChild(li);
-            });
-            keywordListDiv.appendChild(ul);
-
-            // Only display content for the first keyword if no keyword was previously selected
-            // or if the keyword list is re-rendered and the current keyword is no longer in the list.
-            if (!currentDisplayedKeyword || !dataToRender.some(entry => entry.keyword === currentDisplayedKeyword)) {
-                if (dataToRender.length > 0) {
-                    displayContent(dataToRender[0].keyword);
-                } else {
-                    displayContent('');
-                }
-            }
-        }
-
-        /**
-         * Loads dictionary data from the specified URL based on the current language.
-         * Handles loading indicators and error display.
-         */
-        async function loadDictionaryData() {
-            try {
-                loadingIndicator.classList.remove('hidden');
-                const response = await fetch(getDictionaryUrl(currentLanguage));
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const rawData = await response.json();
-                processedDictionaryData = processRawData(rawData);
-                isDictionaryLoadedSuccessfully = true;
-                filterAndOrderData("");
-                renderKeywords(currentFilteredAndOrderedData);
-            } catch (error) {
-                console.error("Error loading dictionary:", error);
-                isDictionaryLoadedSuccessfully = false;
-                displayContent("error_loading_dictionary"); // Use error code
-            } finally {
-                loadingIndicator.classList.add('hidden');
-            }
-        }
-
-        /**
-         * Initializes Zictionary when the DOM is fully loaded.
-         * Sets up DOM element references, language selection, and event listeners.
-         */
-        document.addEventListener('DOMContentLoaded', () => {
-            // Cache DOM element references for performance
-            keywordListDiv = document.getElementById('keyword-list');
-            contentTitle = document.getElementById('content-title');
-            contentBody = document.getElementById('content-body');
-            searchInput = document.getElementById('search-input');
-            openLinkText = document.getElementById('open-link-text');
-            contentLinkAnchor = document.getElementById('content-link')
-            loadingIndicator = document.getElementById('loading-indicator');
-            aiFeatureSection = document.getElementById('ai-feature-section');
-            generateInsightBtn = document.getElementById('generate-insight-btn');
-            generateInsightText = document.getElementById('generate-insight-text');
-            insightOutput = document.getElementById('insight-output');
-            insightText = document.getElementById('insight-text');
-            insightLoading = document.getElementById('insight-loading');
-            languageSelect = document.getElementById('language-select');
-            keywordsTitle = document.getElementById('keywords-title');
-            aiSectionTitle = document.getElementById('ai-section-title');
-            linkContainer = document.getElementById('link-container');
-
-            // Always apply Dark Theme on page load
-            document.documentElement.classList.add('dark');
-
-            // Populate language options in the dropdown
-            LANGUAGES.forEach(lang => {
-                const option = document.createElement('option');
-                option.value = lang.code;
-                option.textContent = lang.name;
-                languageSelect.appendChild(option);
-            });
-
-            // Set initial language selection in the dropdown
-            languageSelect.value = currentLanguage;
-
-            // Add event listener for language change
-            languageSelect.addEventListener('change', (event) => {
-                currentLanguage = event.target.value;
-                localStorage.setItem('language', currentLanguage); // Save selected language
-                currentDisplayedKeyword = null; // Reset displayed keyword on language change
-                updateUIText(); // Update UI text immediately
-                loadDictionaryData(); // Reload dictionary with new language
-            });
-
-            // Add event listener for search input
-            searchInput.addEventListener('input', (event) => {
-                const searchTerm = event.target.value;
-                filterAndOrderData(searchTerm);
-                renderKeywords(currentFilteredAndOrderedData);
-            });
-
-            // Add event listener for "Generate Insight" button click
-            generateInsightBtn.addEventListener('click', async () => {
-                // Check if AI feature is enabled via the manual override flag
-                if (!ENABLE_AI_MANUALLY_OVERRIDE) {
-                    insightText.textContent = translations.ai_disabled[currentLanguage];
-                    insightOutput.classList.remove('hidden');
-                    return;
-                }
-                if (!currentDisplayedEntry) {
-                    insightText.textContent = translations.ai_select_keyword[currentLanguage];
-                    insightOutput.classList.remove('hidden');
-                    return;
-                }
-
-                insightOutput.classList.remove('hidden');
-                insightText.textContent = "";
-                insightLoading.classList.remove('hidden');
-                generateInsightBtn.disabled = true;
-
-                const termName = currentDisplayedEntry.name;
-                const termDefinition = currentDisplayedEntry.content;
-
-                // Construct the prompt using the translated base and dynamic terms
-                const promptTemplate = translations.ai_prompt_base[currentLanguage];
-                const prompt = promptTemplate
-                    .replace('${termName}', termName)
-                    .replace('${termDefinition}', termDefinition);
-
-                try {
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                    const payload = { contents: chatHistory };
-                    const apiKey = ""; // Canvas will automatically provide it at runtime
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    const result = await response.json();
-
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        insightText.textContent = text;
-                    } else {
-                        insightText.textContent = translations.ai_generation_failed[currentLanguage];
-                        console.error("Gemini API response format unexpected:", result);
+                        if (category === '') return 'rgb(255,255,255)';
+                        const colorKey = colorMap[category] || 'gray';
+                        let hsv = hsvMap[colorKey];
+                        if (hsv) {
+                            let [h, s, v] = hsv;
+                            v = Math.max(v, 0.7);
+                            let r, g, b, i = Math.floor(h * 6), f = h * 6 - i, p = v * (1 - s), q = v * (1 - f * s), t = v * (1 - (1 - f) * s);
+                            switch (i % 6) { case 0: r = v, g = t, b = p; break; case 1: r = q, g = v, b = p; break; case 2: r = p, g = v, b = t; break; case 3: r = p, g = q, b = v; break; case 4: r = t, g = p, b = v; break; case 5: r = v, g = p, b = q; break; }
+                            return `rgb(${Math.round(r*255)}, ${Math.round(g*255)}, ${Math.round(b*255)})`;
+                        }
+                        return 'inherit';
                     }
-                } catch (error) {
-                    insightText.textContent = translations.ai_connection_error[currentLanguage];
-                    console.error("Error calling Gemini API:", error);
-                } finally {
-                    insightLoading.classList.add('hidden');
-                    generateInsightBtn.disabled = false;
                 }
-            });
+            };
 
-            // Initial load of dictionary and UI text update
-            updateUIText();
-            loadDictionaryData();
+            document.addEventListener('DOMContentLoaded', app.methods.init);
 
-            // Ensure AI feature section is hidden if ENABLE_AI_MANUALLY_OVERRIDE is false
-            if (!ENABLE_AI_MANUALLY_OVERRIDE) {
-                aiFeatureSection.classList.add('hidden');
-            } else {
-                aiFeatureSection.classList.remove('hidden');
-            }
-        });
+        })();
     </script>
 </body>
 </html>
